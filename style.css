@@ -303,7 +303,7 @@
   grid-template-columns: repeat(2, 1fr);  
   gap: 20px;
 }
-  .member-card{
+.member-card{
   perspective: 1200px;
   height: 300px;
 }
@@ -335,6 +335,26 @@
   color: var(--ink-soft);
   margin-top: 10px;
 }
+  .member-card .avatar{
+    width: 84px;
+    height: 84px;
+    border-radius: 8px;
+    object-fit: cover;
+    background: var(--paper-2);
+    margin-bottom: 12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'Source Serif 4', serif;
+    font-size: 1.6rem;
+    color: var(--ink-soft);
+  }
+  .member-card .name{ font-weight: 600; margin-bottom: 1px; }
+  .member-card .roll{ display:block; color: var(--ink-soft); font-size: 0.78rem; margin-bottom: 8px; }
+  .member-card .topic{ font-size: 0.88rem; color: var(--ink-soft); }
+  .member-card .status{ font-size: 0.85rem; color: var(--accent); margin-top: 6px; }
+  .member-card .links{ margin-top: 8px; display:flex; gap: 10px; flex-wrap: wrap; }
+  .member-card .links a{ font-size: 0.8rem; }
 
   /* Gallery */
   .gallery-frame{
