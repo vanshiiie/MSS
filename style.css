@@ -543,3 +543,167 @@ a.pub-entry:hover{
   .bio p:last-child{
     margin-bottom: 0;
   }
+
+
+```css id="q4n6s2"
+
+
+@media (max-width: 768px) {
+
+  /* Main page spacing */
+  .wrap {
+    width: min(100% - 28px, 1100px);
+  }
+
+
+  /* Page headings */
+  .page-title {
+    font-size: 2rem;
+  }
+
+  .subsection-title {
+    font-size: 1.25rem;
+  }
+
+
+  /* Principal Investigator card */
+  .pi-card {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .pi-photo {
+    width: 110px;
+    height: 110px;
+  }
+
+  .pi-card .col {
+    width: 100%;
+  }
+
+
+  /* Ph.D. member grid */
+  .member-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+
+  /* Member cards */
+  .member-card {
+    width: 100%;
+    min-width: 0;
+  }
+
+
+  /* Prevent long text from overflowing */
+  .member-card .name,
+  .member-card .roll,
+  .member-card .topic,
+  .member-card .status,
+  .member-card .bio {
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
+
+
+  /* Member photos */
+  .member-photo,
+  .member-card .avatar {
+    width: 76px;
+    height: 76px;
+  }
+
+
+  /* Card body */
+  .card-body {
+    min-width: 0;
+  }
+
+
+  /* Email / LinkedIn / Website links */
+  .member-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .member-links a {
+    white-space: nowrap;
+  }
+
+
+  /* Flip-card back */
+  .card-back {
+    overflow-y: auto;
+  }
+
+
+  /* Long research topics */
+  .topic {
+    overflow-wrap: anywhere;
+  }
+
+
+  /* Current M.Tech / M.Sc / UG rows */
+  .member-row {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+
+  /* Research / general paragraphs */
+  .page p {
+    overflow-wrap: break-word;
+  }
+
+
+  /* Funding cards */
+  .funding-grid {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+
+/* Extra-small phones */
+
+@media (max-width: 480px) {
+
+  .wrap {
+    width: min(100% - 20px, 1100px);
+  }
+
+  .page-title {
+    font-size: 1.75rem;
+  }
+
+  .member-grid {
+    gap: 12px;
+  }
+
+  .member-card {
+    padding: 12px;
+  }
+
+  .member-photo,
+  .member-card .avatar {
+    width: 70px;
+    height: 70px;
+  }
+
+  .member-card .name {
+    font-size: 1rem;
+  }
+
+  .member-card .topic {
+    font-size: 0.82rem;
+  }
+
+  .member-card .roll {
+    font-size: 0.74rem;
+  }
+
+}
+
