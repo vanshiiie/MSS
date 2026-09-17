@@ -544,52 +544,164 @@ a.pub-entry:hover{
     margin-bottom: 0;
   }
 
+/* =========================================================
+   PEOPLE — MOBILE PHONE
+   ========================================================= */
 
-```css id="q4n6s2"
+@media (max-width: 700px) {
+
+  /* One person per row */
+  .member-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+    width: 100%;
+  }
+
+  /* Individual person's card */
+  .member-card {
+    width: 100%;
+    height: 430px;
+    min-width: 0;
+    perspective: 1200px;
+  }
+
+  /* Flip container */
+  .member-card .card-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+
+  /* Front and back */
+  .member-card .card-front,
+  .member-card .card-back {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    padding: 20px;
+    overflow: hidden;
+  }
+
+  /* MOBILE FRONT:
+     photo on top, text underneath */
+  .member-card .card-front {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0;
+  }
+
+  /* Photo */
+  .member-card .member-photo,
+  .member-card .avatar {
+    width: 125px;
+    height: 125px;
+    flex: none;
+    margin: 0 auto 18px auto;
+    border-radius: 10px;
+  }
+
+  /* Text area */
+  .member-card .card-body {
+    width: 100%;
+    min-width: 0;
+    flex: none;
+  }
+
+  .member-card .name {
+    font-size: 1.15rem;
+    line-height: 1.3;
+    margin-bottom: 5px;
+  }
+
+  .member-card .roll {
+    font-size: 0.8rem;
+    line-height: 1.4;
+    margin-bottom: 12px;
+  }
+
+  .member-card .topic {
+    font-size: 0.9rem;
+    line-height: 1.55;
+    overflow-wrap: anywhere;
+  }
+
+  .member-card .status {
+    font-size: 0.82rem;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+    margin-top: 8px;
+  }
+
+  /* Email / Website / LinkedIn */
+  .member-card .member-links {
+    justify-content: center;
+    margin-top: 14px;
+    gap: 14px;
+  }
+
+  .member-card .member-links a {
+    font-size: 0.8rem;
+  }
+
+  /* Tap to read more */
+  .member-card .flip-hint {
+    margin-top: 18px;
+    font-size: 0.72rem;
+  }
+
+  /* Back side */
+  .member-card .card-back {
+    text-align: left;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .member-card .bio {
+    width: 100%;
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+  }
+
+}
 
 
 /* =========================================================
-   PEOPLE — MOBILE
+   VERY SMALL PHONES
    ========================================================= */
 
-@media (max-width: 768px) {
-
-  .member-grid {
-    grid-template-columns: 1fr;
-    width: 100%;
-  }
+@media (max-width: 420px) {
 
   .member-card {
-    width: 100%;
-    min-width: 0;
-    box-sizing: border-box;
+    height: 410px;
   }
 
-  .card-inner {
-    width: 100%;
-    min-width: 0;
+  .member-card .card-front,
+  .member-card .card-back {
+    padding: 18px;
   }
 
-  .card-front,
-  .card-back {
-    width: 100%;
-    box-sizing: border-box;
-  }
-
-  .card-body {
-    min-width: 0;
-  }
-
-  .member-card .name,
-  .member-card .roll,
-  .member-card .topic,
-  .member-card .status {
-    overflow-wrap: break-word;
-  }
-
-  .member-photo,
+  .member-card .member-photo,
   .member-card .avatar {
-    flex-shrink: 0;
+    width: 105px;
+    height: 105px;
+    margin-bottom: 15px;
+  }
+
+  .member-card .name {
+    font-size: 1.05rem;
+  }
+
+  .member-card .topic {
+    font-size: 0.86rem;
   }
 
 }
