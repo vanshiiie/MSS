@@ -257,6 +257,17 @@
     margin: 2em 0 0.6em;
   }
 
+a.pub-entry{
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+a.pub-entry:hover{
+  background: var(--paper-2);
+}
+
   /* People */
   .pi-card{
     display:flex;
