@@ -49,10 +49,9 @@
 </footer>
 
 <script>
-  // The page content lives in separate files under /sections/ — one per
-  // nav item — so each page can be edited on its own without scrolling
-  // through one giant HTML file. This script loads them all once, then
-  // wires up the same hash-based navigation as before.
+  // Content for each nav item lives in its own file under sections/.
+  // This loads all six, drops them into <main>, then handles which one
+  // is visible based on the URL hash (#home, #research, etc).
   var SECTION_IDS = ['home', 'research', 'publications', 'people', 'gallery', 'contact'];
   var root = document.getElementById('sectionsRoot');
 
@@ -65,6 +64,7 @@
     })
   ).then(function (htmlParts) {
     root.innerHTML = htmlParts.join('\n');
+    forceCorrectVisibility();
     initPage();
   }).catch(function (err) {
     root.innerHTML =
@@ -73,6 +73,19 @@
       'double-check the filename matches exactly, then refresh.</p></div>';
     console.error(err);
   });
+
+  // Safety net: no matter what the "hidden" attribute says in the raw
+  // fragment files, force every section to the correct state up front,
+  // based on the current hash. This is what fixes "home shows on every
+  // page" if a fragment's hidden attribute got lost or duplicated.
+  function forceCorrectVisibility() {
+    var target = location.hash.replace('#', '') || 'home';
+    if (SECTION_IDS.indexOf(target) === -1) target = 'home';
+    SECTION_IDS.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.hidden = (id !== target);
+    });
+  }
 
   function initPage() {
     function showSection(id) {
@@ -98,11 +111,6 @@
       var current = document.documentElement.getAttribute('data-theme');
       document.documentElement.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
     });
-    document.querySelectorAll('.member-card').forEach(function (card) {
-  card.addEventListener('click', function () {
-    card.classList.toggle('is-flipped');
-  });
-});
 
     // Hero image carousel: cross-fades between images every few seconds.
     (function () {
@@ -121,529 +129,14 @@
         if (caption) caption.textContent = imgs[i].getAttribute('data-caption') || '';
       }, 4500);
     })();
-  }
-</script>
 
-</body>
-</html>
-  <section class="page" id="home">
-    <div class="hero wrap">
-      <div class="hero-inner">
-        <div>
-          <h1>Soft Matter &amp; Statistical Physics Group</h1>
-          <p class="pi-line">Prof. Awaneesh Singh · Department of Physics · IIT (BHU) Varanasi</p>
-          <p class="lede">We study the dynamic and structural properties of phase ordering in unstable, far-from-equilibrium systems — how nucleation, spinodal decomposition, late-stage growth, and coarsening shape soft, disordered materials.</p>
-          <div class="hero-cta">
-            <a class="btn btn-primary" href="#publications">View publications</a>
-            <a class="btn btn-ghost" href="#people">Meet the group</a>
-          </div>
-        </div>
-        <div class="hero-carousel" id="heroCarousel">
-          <img class="is-active" src="images/lab-group.jpg" alt="The group together" data-caption="The group, together">
-          <img src="images/pi.jpg" alt="Dr. Awaneesh Singh" data-caption="Dr. Awaneesh Singh, Associate Professor">
-          <span class="cap" id="heroCarouselCap">The group, together</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="wrap section-block">
-      <h2 class="page-title">Latest news &amp; achievements</h2>
-      <ul class="news-list">
-        <li class="news-item"><span class="news-year">2026</span><span class="news-text">Our study on amphiphilic polymer-fluid blends was featured as the <strong>Front Cover</strong> of <em>Langmuir</em>.</span></li>
-        <li class="news-item"><span class="news-year">2026</span><span class="news-text">Awarded a Core Research Grant (CRG) from SERB to study self-assembly and structural transitions across multiple length scales, running through March 2027.</span></li>
-        <li class="news-item"><span class="news-year">2025</span><span class="news-text">Three group papers featured on journal covers this year — two <em>Langmuir</em> Front Covers and a <em>Soft Matter</em> Inside-back Cover.</span></li>
-        <li class="news-item"><span class="news-year">2025</span><span class="news-text">Vanshika Saini and Ankita Gupta awarded the Prime Minister's Research Fellowship (PMRF).</span></li>
-        <li class="news-item"><span class="news-year">2025</span><span class="news-text">Group alumni move on to postdoctoral positions: Ashish Kumar Singh to SISSA, Trieste; Samiksha Shrivastav to HKUST, Hong Kong; Avinash Chauhan to IISER Mohali.</span></li>
-        <li class="news-item"><span class="news-year">2022</span><span class="news-text">Our paper on ATRP-brush modified surfaces was selected as a <em>PCCP</em> Hot Article.</span></li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- RESEARCH -->
-  <section class="page" id="research" hidden>
-    <div class="wrap section-block" style="border-bottom:none;">
-      <h2 class="page-title">Research</h2>
-      <p class="page-intro">The research interests of our group lie broadly in the field of Soft Matter and Statistical Physics.</p>
-      <p>We study the dynamic and structural properties of phase ordering in unstable, far-from-equilibrium systems. We explore how their behaviour is measured and characterised, through phenomena such as nucleation, spinodal decomposition, late-stage growth, and coarsening. We use a combination of analytical and computational tools — coarse-grained field-theoretical models, Monte Carlo (MC), Molecular Dynamics (MD), Dissipative Particle Dynamics (DPD) simulations, and the Gel Lattice Spring Model (GLSM) — to explore current challenging problems in the field.</p>
-
-      <h3 class="subsection-title">Current challenges</h3>
-      <ul class="challenge-list">
-        <li>Computational design of smart materials.</li>
-        <li>Phase separation kinetics in multi-component systems — simple fluids, polymer melts and solutions, and block copolymer melts and solutions.</li>
-        <li>Nanostructure formation in nonequilibrium systems.</li>
-        <li>Computational analysis of self-assembly involving atom transfer radical polymerisation (ATRP), free radical polymerisation (FRP), and photo-controlled radical polymerisation (Photo-CRP).</li>
-      </ul>
-
-      <h3 class="subsection-title">Research topics</h3>
-      <div class="topic-grid">
-
-        <div class="topic-card">
-          <div class="topic-art">
-            <svg viewBox="0 0 100 100" fill="none">
-              <path d="M50 8 L50 20 M50 80 L50 92 M8 50 L20 50 M80 50 L92 50 M20 20 L28 28 M72 72 L80 80 M80 20 L72 28 M28 72 L20 80" stroke="var(--accent-2)" stroke-width="2.5" stroke-linecap="round"/>
-              <circle cx="42" cy="48" r="16" stroke="var(--accent)" stroke-width="2.5"/>
-              <circle cx="62" cy="58" r="10" stroke="var(--accent-2)" stroke-width="2.5"/>
-            </svg>
-          </div>
-          <div>
-            <h3>Photo-responsive phase separation</h3>
-            <p>How light can be used to trigger and steer phase separation in polymer melts — switching bonds or illumination patterns on and off to control domain growth and final morphology, rather than relying on temperature or composition alone.</p>
-            <div class="topic-refs">
-              <div>Saini, Singh &amp; Singh — Physical Review E, 112, 025407 (2025)</div>
-              <div>A. K. Singh, Chauhan, Puri &amp; Singh — Soft Matter, 17(7), 1802–1813 (2021)</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="topic-card">
-          <div class="topic-art">
-            <svg viewBox="0 0 100 100" fill="none">
-              <circle cx="50" cy="50" r="4" fill="var(--ink-soft)"/>
-              <path d="M50 50 L50 15 M50 50 L80 30 M50 50 L82 62 M50 50 L58 88 M50 50 L20 78 M50 50 L18 35" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round"/>
-              <circle cx="50" cy="15" r="5" stroke="var(--accent-2)" stroke-width="2"/>
-              <circle cx="80" cy="30" r="7" stroke="var(--accent-2)" stroke-width="2"/>
-              <circle cx="82" cy="62" r="4" stroke="var(--accent-2)" stroke-width="2"/>
-              <circle cx="58" cy="88" r="6" stroke="var(--accent-2)" stroke-width="2"/>
-              <circle cx="20" cy="78" r="5" stroke="var(--accent-2)" stroke-width="2"/>
-              <circle cx="18" cy="35" r="8" stroke="var(--accent-2)" stroke-width="2"/>
-            </svg>
-          </div>
-          <div>
-            <h3>Miktoarm star polymers</h3>
-            <p>Star-shaped polymers with arms of unequal length or chemistry self-assemble very differently from linear chains. We study how arm number, size, and rigidity set the pace and pattern of segregation and self-assembly.</p>
-            <div class="topic-refs">
-              <div>Verma, A. K. Singh &amp; Singh — Langmuir, 41(47), 31860–31874 (2025)</div>
-              <div>Gogoi, Puri &amp; Singh — Journal of Chemical Physics, 164, 094905 (2026)</div>
-              <div>Gogoi, Chauhan, Puri &amp; Singh — Physical Review E, 110(3), 034504 (2024)</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="topic-card">
-          <div class="topic-art">
-            <svg viewBox="0 0 100 100" fill="none">
-              <line x1="5" y1="55" x2="95" y2="55" stroke="var(--line)" stroke-width="2"/>
-              <circle cx="50" cy="48" r="16" stroke="var(--accent)" stroke-width="2.5"/>
-              <path d="M38 36 L32 30 M42 32 L38 25 M50 30 L50 22 M58 32 L62 25 M62 36 L68 30" stroke="var(--accent-2)" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <div>
-            <h3>Polymer-brush particles &amp; Pickering emulsions</h3>
-            <p>Anisotropic particles grafted with polymer brushes can sit at a fluid–fluid interface and stabilise an emulsion. We look at how particle shape, brush architecture, and grafting pattern govern how stable that emulsion is.</p>
-            <div class="topic-refs">
-              <div>Pradhan, Upadhyay, Shrivastava, Singh &amp; Saha — Langmuir, 41(25), 16342–16355 (2025)</div>
-              <div>Shrivastava, Upadhyay, Pradhan, Saha &amp; Singh — Langmuir, 40(27), 13920–13934 (2024)</div>
-              <div>Pradhan, Upadhyay, Shrivastava, Singh &amp; Saha — Polymer, 324, 128222 (2025)</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="topic-card">
-          <div class="topic-art">
-            <svg viewBox="0 0 100 100" fill="none">
-              <path d="M15 30 Q30 15 50 25 T85 20" stroke="var(--accent)" stroke-width="2.5" fill="none"/>
-              <path d="M15 55 Q35 45 50 58 T85 55" stroke="var(--accent-2)" stroke-width="2.5" fill="none"/>
-              <path d="M15 80 Q30 70 50 78 T85 75" stroke="var(--ink-soft)" stroke-width="2" fill="none"/>
-            </svg>
-          </div>
-          <div>
-            <h3>Segregation kinetics in complex fluids</h3>
-            <p>The core statistical-physics question underneath most of our work: once a mixture becomes unstable, how fast do domains grow, and what shape do they take? We track this in simple fluids, charged systems, and bond-disordered lattices.</p>
-            <div class="topic-refs">
-              <div>Verma &amp; Singh — Physical Review E (Letter), 113(3), L033401 (2026)</div>
-              <div>Shrivastava &amp; Singh — Phase Transitions, 96, 311–327 (2023)</div>
-              <div>Gogoi, Chauhan, Puri &amp; Singh — Soft Matter, 19(34), 6433–6445 (2023)</div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <h3 class="subsection-title">Funding</h3>
-      <div class="funding-grid">
-        <div class="funding-card">
-          <h3>Early Career Research Award (ECRA)</h3>
-          <div class="meta">ECR/2017/002529 · SERB · ₹46,54,375 · Nov 2018 – May 2022</div>
-          <p style="margin:0;">Modeling self-assembly and phase separation kinetics in complex soft materials.</p>
-        </div>
-        <div class="funding-card">
-          <h3>Core Research Grant (CRG)</h3>
-          <div class="meta">CRG/2023/001311 · SERB · ₹37,76,102 · Mar 2024 – Mar 2027</div>
-          <p style="margin:0;">Kinetics of self-assembly and structural transitions in complex soft materials across multiple length scales.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- PUBLICATIONS -->
-  <section class="page" id="publications" hidden>
-    <div class="wrap section-block" style="border-bottom:none;">
-      <h2 class="page-title">Publications</h2>
-      <p class="page-intro">Journal articles, manuscripts in progress, and conference proceedings from the group.</p>
-      <div class="pub-group"><h3>Under review</h3>
-<div class="pub-entry"><div class="t">Segregation Kinetics of Biphasic Polymer Brushes Grafted from Spherical Substrates: Insights from Simulation</div><div class="a">Vanshika Saini, Awaneesh Singh</div><div class="n">Under review, 2026</div></div>
-</div>
-<div class="pub-group"><h3>Manuscripts in preparation</h3>
-<div class="pub-entry"><div class="t">Phase separation kinetics of ternary fluids: DPD simulation study on the influence of charged and uncharged polymers</div><div class="a">Samiksha Shrivastava, Awaneesh Singh</div></div>
-<div class="pub-entry"><div class="t">Effect of various solvents on polyzwitterion self-assembly through a DPD simulation study</div><div class="a">Avinash Chauhan, Devendra Kumar Verma, Awaneesh Singh</div></div>
-<div class="pub-entry"><div class="t">Insights into phase separation kinetics of fluids within polymer gel</div><div class="a">Ashish Kumar Singh, Awaneesh Singh</div></div>
-<div class="pub-entry"><div class="t">Effect of random photo illumination on phase-separating dimers: A DPD simulation study</div><div class="a">Ashish Kumar Singh, Samiksha Shrivastav, Awaneesh Singh</div></div>
-<div class="pub-entry"><div class="t">DPD simulation study of phase separating binary polymeric fluids of varied topologies</div><div class="a">Avinash Chauhan, Awaneesh Singh</div></div>
-</div>
-<div class="pub-group"><h3>2026</h3>
-<div class="pub-entry"><div class="t">Topology-Regulated Coarsening and Interfacial Morphologies in Amphiphilic Polymer-Fluid Blends</div><div class="a">Ankita Gupta, Ashish Kumar Singh, Awaneesh Singh</div><div class="v">Langmuir, 42(18), 12520–12531</div><div class="n">IF 3.9 — Front Cover</div></div>
-<div class="pub-entry"><div class="t">Kinetics of Phase Separation in Miktoarm Star Polymer Melts: Effect of Arm Sequence, Size, and Rigidity</div><div class="a">Dorothy Gogoi, Sanjay Puri, Awaneesh Singh</div><div class="v">Journal of Chemical Physics, 164, 094905</div><div class="n">IF 3.1</div></div>
-<div class="pub-entry"><div class="t">Reaction-Tuned Segregation Kinetics in Binary Fluids: Mesoscale Insights</div><div class="a">Devendra Kumar Verma, Awaneesh Singh</div><div class="v">Physical Review E (Letter), 113(3), L033401</div><div class="n">IF 2.4</div></div>
-</div>
-<div class="pub-group"><h3>2025</h3>
-<div class="pub-entry"><div class="t">Structural and Dynamical Insights into Self-assembly Kinetics in Miktoarm Star Polymer Solutions: Role of Arm Size and Topology</div><div class="a">Devendra Kumar Verma, Ashish Kumar Singh, Awaneesh Singh</div><div class="v">Langmuir, 41(47), 31860–31874</div><div class="n">IF 3.9 — Front Cover</div></div>
-<div class="pub-entry"><div class="t">Photoinduced phase separation and morphology control in amphiphilic dimer melts</div><div class="a">Vanshika Saini, Ashish Kumar Singh, Awaneesh Singh</div><div class="v">Physical Review E, 112(2), 025407</div><div class="n">IF 2.4</div></div>
-<div class="pub-entry"><div class="t">Insights into Stabilizing Pickering Emulsion by Polymer Brush-modified Tricompartmental Anisotropic Particles: A Simulation and Experimental Study</div><div class="a">Samiksha Shrivastava, Subhashree Subhasmita Pradhan, Sampa Saha, Awaneesh Singh</div><div class="v">Langmuir, 41(25), 16342–16355</div><div class="n">IF 3.9</div></div>
-<div class="pub-entry"><div class="t">Shear-driven segregation kinetics in binary polymer blends: Insights from dissipative-particle-dynamics simulations</div><div class="a">Ashish Kumar Singh, Samiksha Shrivastav, Awaneesh Singh</div><div class="v">Physical Review E, 111(6), 065412</div><div class="n">IF 2.4</div></div>
-<div class="pub-entry"><div class="t">Self-assembly kinetics of miktoarm star polymers in diverse solvent environments: Insights from Dissipative-Particle-Dynamics simulation</div><div class="a">Devendra Kumar Verma, Awaneesh Singh</div><div class="v">Soft Matter, 21(20), 3965–3978</div><div class="n">IF 2.8 — Inside-back Cover</div></div>
-<div class="pub-entry"><div class="t">Architectural influence of polymer brush-modified tri-compartmental anisotropic particles in stabilizing Pickering emulsion</div><div class="a">Subhashree Subhasmita Pradhan, Ashank Upadhyay, Samiksha Shrivastava, Awaneesh Singh, Sampa Saha</div><div class="v">Polymer, 324, 128222</div><div class="n">IF 4.5</div></div>
-</div>
-<div class="pub-group"><h3>2024</h3>
-<div class="pub-entry"><div class="t">Segregation kinetics and scaling behavior of miktoarm star polymer: A DPD simulation study</div><div class="a">Dorothy Gogoi, Avinash Chauhan, Sanjay Puri, Awaneesh Singh</div><div class="v">Physical Review E, 110(3), 034504</div><div class="n">IF 2.4</div></div>
-<div class="pub-entry"><div class="t">Evolution of stable Pickering emulsion by polymer brush-modified Janus particles: insights from DPD simulation and experimental study</div><div class="a">Samiksha Shrivastava, Ashank Upadhyay, Subhashree Subhasmita Pradhan, Sampa Saha, Awaneesh Singh</div><div class="v">Langmuir, 40(27), 13920–13934</div><div class="n">IF 3.9 — Front Cover</div></div>
-<div class="pub-entry"><div class="t">Architecture-dependent transport behavior of iron (0) entrapped biodegradable polymeric particles for groundwater remediation</div><div class="a">Kalpana Pandey, Devendra Kumar Verma, Awaneesh Singh, Sampa Saha</div><div class="v">Chemosphere, 357, 141892</div><div class="n">IF 8.8</div></div>
-<div class="pub-entry"><div class="t">Photomodulated phase-separation kinetics of block copolymer melts: A DPD Simulation Study</div><div class="a">Avinash Chauhan, Ashish Kumar Singh, Awaneesh Singh</div><div class="v">Molecular Simulation, 50(5), 394–403</div><div class="n">IF 2.19</div></div>
-<div class="pub-entry"><div class="t">Growth kinetics and morphology characterization of binary polymeric fluid under random photo illumination</div><div class="a">Ashish Kumar Singh, Avinash Chauhan, Awaneesh Singh</div><div class="v">Journal of Chemical Physics, 160, 024907</div><div class="n">IF 3.1</div></div>
-</div>
-<div class="pub-group"><h3>2023</h3>
-<div class="pub-entry"><div class="t">Effect of amphiphilic polymers on phase separating binary mixtures: A DPD simulation study</div><div class="a">Avinash Chauhan, Dorothy Gogoi, Sanjay Puri, Awaneesh Singh</div><div class="v">Journal of Chemical Physics, 159, 204901</div><div class="n">IF 3.1</div></div>
-<div class="pub-entry"><div class="t">Segregation of fluids with polymer additives at domain interfaces: a dissipative particle dynamics study</div><div class="a">Dorothy Gogoi, Avinash Chauhan, Sanjay Puri, Awaneesh Singh</div><div class="v">Soft Matter, 19(34), 6433–6445</div><div class="n">IF 2.8 — Front Cover</div></div>
-<div class="pub-entry"><div class="t">Phase separation kinetics of block copolymer melts confined under moving parallel walls: A DPD study</div><div class="a">Ashish Kumar Singh, Awaneesh Singh</div><div class="v">Computational Materials Science, 226, 112224</div><div class="n">IF 3.3</div></div>
-<div class="pub-entry"><div class="t">Growth kinetics in two-dimensional binary mixtures with bond-disorder: Monte Carlo simulation results</div><div class="a">Samiksha Shrivastava, Awaneesh Singh</div><div class="v">Phase Transitions, 96, 311–327</div><div class="n">IF 1.529</div></div>
-</div>
-<div class="pub-group"><h3>2022</h3>
-<div class="pub-entry"><div class="t">Dissipative particle dynamics simulation study on ATRP-brush modification of variably shaped surfaces and biopolymer adsorption</div><div class="a">S. Shrivastava, S. Saha, A. Singh</div><div class="v">Physical Chemistry Chemical Physics, 24(30), 17986–18003</div><div class="n">IF 3.1 — PCCP Hot Articles 2022; Back Cover</div></div>
-</div>
-<div class="pub-group"><h3>2021</h3>
-<div class="pub-entry"><div class="t">High Adsorption of α-Glucosidase on Polymer Brush-Modified Anisotropic Particles Acquired by Electrospraying — A Combined Experimental and Simulation Study</div><div class="a">Ifra, Awaneesh Singh, Sampa Saha</div><div class="v">ACS Applied Bio Materials, 4(10), 7431–7444</div><div class="n">IF 3.25</div></div>
-<div class="pub-entry"><div class="t">Photo-induced bond breaking during phase separation kinetics of block copolymer melts: A dissipative particle dynamics study</div><div class="a">Ashish Kumar Singh, Avinash Chauhan, Sanjay Puri, Awaneesh Singh</div><div class="v">Soft Matter, 17(7), 1802–1813</div><div class="n">IF 4.046 — Back Cover</div></div>
-</div>
-<div class="pub-group"><h3>2020</h3>
-<div class="pub-entry"><div class="t">Kinetics of domain growth in Ising systems with the bond disorder at regularly selected sites</div><div class="a">Awaneesh Singh</div><div class="v">Bulletin of Materials Science, 43, 185</div><div class="n">IF 1.878</div></div>
-<div class="pub-entry"><div class="t">Shape-Shifting of Cup-shaped Particles on Growing Poly(2-hydroxy ethyl methacrylate) Brushes by "Grafting From" Approach and Dissipative Particle Dynamics Simulation</div><div class="a">Ifra, Awaneesh Singh, Sampa Saha</div><div class="v">ChemistrySelect, 5(15), 4685–4694</div><div class="n">IF 2.307</div></div>
-</div>
-<div class="pub-group"><h3>2018</h3>
-<div class="pub-entry"><div class="t">Kinetics of phase separation in ternary fluid mixtures: A dissipative particle dynamics simulation study</div><div class="a">Amrita Singh, Anirban Chakraborti, Awaneesh Singh</div><div class="v">Soft Matter, 14, 4317–4326</div><div class="n">IF 4.046</div></div>
-<div class="pub-entry"><div class="t">Designing polymer gels and composites that undergo bio-inspired phototactic reconfiguration and motion</div><div class="a">Olga Kuksenok, Awaneesh Singh, Anna C. Balazs</div><div class="v">Bioinspiration & Biomimetics, 13, 035004</div><div class="n">IF 2.985</div></div>
-</div>
-<div class="pub-group"><h3>2017</h3>
-<div class="pub-entry"><div class="t">Effect of bond-disorder on the phase-separation kinetics of binary mixtures: A Monte Carlo simulation study</div><div class="a">Awaneesh Singh, Amrita Singh, Anirban Chakraborti</div><div class="v">Journal of Chemical Physics, 147(12), 124902</div><div class="n">IF 4.304</div></div>
-<div class="pub-entry"><div class="t">Combining ATRP and FRP gels: soft gluing of polymeric materials for the fabrication of stackable gels</div><div class="a">Antoine Beziau, Rafael N. L. de Menezes, Santidan Biswas, Awaneesh Singh, J. Cuthbert, Anna C. Balazs, Tomasz Kowalewski, Krzysztof Matyjaszewski</div><div class="v">Polymers, 9, 186</div><div class="n">IF 4.967 — Featured Article 2017</div></div>
-<div class="pub-entry"><div class="t">Photo-regeneration of Severed Gel with Iniferter-mediated Photo-growth</div><div class="a">Awaneesh Singh, Olga Kuksenok, Jeremiah A. Johnson, Anna C. Balazs</div><div class="v">Soft Matter, 13, 1978–1987</div><div class="n">IF 4.046</div></div>
-<div class="pub-entry"><div class="t">Living Additive Manufacturing: Transformation of Parent Gels into Diversely Functionalized Daughter Gels Made Possible by Visible Light Photo-redox Catalysis</div><div class="a">Mao Chen, Yuwei Gu, Awaneesh Singh, Mingjiang Zhong, Alex Jordan, Santidan Biswas, LaShanda Korley, Anna C. Balazs, Jeremiah A. Johnson</div><div class="v">ACS Central Science, 3, 124–134</div><div class="n">IF 18.728 — Web highlight; covered by MIT News and others</div></div>
-<div class="pub-entry"><div class="t">Modeling the formation of layered, amphiphilic gels</div><div class="a">Santidan Biswas, Awaneesh Singh, Antoine Beziau, Tomasz Kowalewski, Krzysztof Matyjaszewski, Anna C. Balazs</div><div class="v">Polymer, 111, 214–221</div><div class="n">IF 4.436</div></div>
-</div>
-<div class="pub-group"><h3>2016</h3>
-<div class="pub-entry"><div class="t">Embedding Flexible Fibers into Responsive Gels to Create Composites with Controllable Dexterity</div><div class="a">Awaneesh Singh, Olga Kuksenok, Anna C. Balazs</div><div class="v">Soft Matter, 12, 9170–9184</div><div class="n">IF 4.046 — Inside Front Cover</div></div>
-<div class="pub-entry"><div class="t">Miktoarm Star Copolymers as Interfacial Connectors for Stackable Amphiphilic Gels</div><div class="a">Antoine Beziau, Awaneesh Singh, Rafael N. L. de Menezes, Hangjun Ding, Antonina Simakova, Olga Kuksenok, Anna C. Balazs, Tomasz Kowalewski, Krzysztof Matyjaszewski</div><div class="v">Polymer, 101, 406–414</div><div class="n">IF 4.436</div></div>
-<div class="pub-entry"><div class="t">Tailoring the Structure of Polymer Networks with Iniferter-Mediated Photo-Growth</div><div class="a">Awaneesh Singh, Olga Kuksenok, Jeremiah A. Johnson, Anna C. Balazs</div><div class="v">Polymer Chemistry, 7, 2955–2964</div><div class="n">IF 5.364</div></div>
-</div>
-<div class="pub-group"><h3>2015</h3>
-<div class="pub-entry"><div class="t">Ordering Dynamics in Neuron Activity Pattern Model: An Insight to Brain Functionality</div><div class="a">Jasleen Gundh, Awaneesh Singh, R. K. Brojen Singh</div><div class="v">PLoS ONE, 10(10), e0141463</div><div class="n">IF 3.752</div></div>
-<div class="pub-entry"><div class="t">Phase Separation in Ternary Fluid Mixtures: A Molecular Dynamics Study</div><div class="a">Awaneesh Singh, Sanjay Puri</div><div class="v">Soft Matter, 11, 2213–2219</div><div class="n">IF 4.046 — Soft Matter Hot Articles 2015</div></div>
-<div class="pub-entry"><div class="t">Kinetics of Microphase Separation in Block Copolymers: A Molecular Dynamics Study</div><div class="a">Awaneesh Singh, Raishma Krishnan, Sanjay Puri</div><div class="v">Europhysics Letters, 109, 26006</div><div class="n">IF 1.947</div></div>
-</div>
-<div class="pub-group"><h3>2014</h3>
-<div class="pub-entry"><div class="t">Kinetics of Phase Separation in Polymer Mixtures: A Molecular Dynamics Study</div><div class="a">Awaneesh Singh, Sanjay Puri, Chandan Dasgupta</div><div class="v">Journal of Chemical Physics, 140, 244906</div><div class="n">IF 4.304</div></div>
-</div>
-<div class="pub-group"><h3>2013</h3>
-<div class="pub-entry"><div class="t">Kinetics of Phase Transitions in Quark Matter</div><div class="a">Awaneesh Singh, Sanjay Puri, Hiranmaya Mishra</div><div class="v">Europhysics Letters, 102, 52001</div><div class="n">IF 1.947</div></div>
-<div class="pub-entry"><div class="t">Domain Growth in Chiral Phase Transitions: Role of Inertial Dynamics</div><div class="a">Awaneesh Singh, Sanjay Puri, Hiranmaya Mishra</div><div class="v">Nuclear Physics A, 908, 12</div><div class="n">IF 1.916</div></div>
-</div>
-<div class="pub-group"><h3>2012</h3>
-<div class="pub-entry"><div class="t">Growth Kinetics of Nanoclusters in Solution</div><div class="a">Awaneesh Singh, Sanjay Puri, Chandan Dasgupta</div><div class="v">Journal of Physical Chemistry B, 116, 4519</div><div class="n">IF 3.466</div></div>
-</div>
-<div class="pub-group"><h3>2011</h3>
-<div class="pub-entry"><div class="t">Domain Growth in Chiral Phase Transitions</div><div class="a">Awaneesh Singh, Sanjay Puri, Hiranmaya Mishra</div><div class="v">Nuclear Physics A, 864, 176–202</div><div class="n">IF 1.916</div></div>
-<div class="pub-entry"><div class="t">Control of Structure Formation in Phase-Separating Systems</div><div class="a">Awaneesh Singh, A. Mukerjee, H. M. Vermeulen, G. Barkema, Sanjay Puri</div><div class="v">Journal of Chemical Physics, 134, 044910</div><div class="n">IF 4.30</div></div>
-</div>
-<h3 class="subsection-title">Conference proceedings</h3>
-<div class="pub-group">
-<div class="pub-entry"><div class="t">ATRP-brush modification of variably shaped surfaces and biopolymer adsorption: Dissipative particle dynamics simulation study</div><div class="a">A. Singh</div><div class="v">Bulletin of the American Physical Society (2023)</div></div>
-<div class="pub-entry"><div class="t">Tailoring the Structure of Polymer Networks with Photo-Controlled Radical Polymerization</div><div class="a">Awaneesh Singh, Olga Kuksenok, Jeremiah A. Johnson, Anna C. Balazs</div><div class="v">Bulletin of the American Physical Society (2016)</div></div>
-<div class="pub-entry"><div class="t">Photo-Regeneration of Severed Gel Using Photo-Controlled Radical Polymerization</div><div class="a">Awaneesh Singh, Olga Kuksenok, Jeremiah A. Johnson, Anna C. Balazs</div><div class="v">Bulletin of the American Physical Society (2016)</div></div>
-<div class="pub-entry"><div class="t">Covalent Fusion of Layered Incompatible Gels in Immiscible Solvents</div><div class="a">Santidan Biswas, Awaneesh Singh, Krzysztof Matyjaszewski, Anna C. Balazs</div><div class="v">Bulletin of the American Physical Society (2016)</div></div>
-<div class="pub-entry"><div class="t">Kinetics of chiral transitions and domain growth in quark matter</div><div class="a">Awaneesh Singh, Sanjay Puri, Hiranmaya Mishra</div><div class="v">Proceedings of Science, CPOD 2013, 022</div></div>
-<div class="pub-entry"><div class="t">Domain Growth and Ordering Kinetics in Dense Quark Matter</div><div class="a">Awaneesh Singh, Sanjay Puri, Hiranmaya Mishra</div><div class="v">Physics of Atomic Nuclei: Elementary Particles and Fields, 75(6), 689 (2012)</div></div>
-<div class="pub-entry"><div class="t">Kinetics of Chiral Phase Transitions in Quark Matter</div><div class="a">Awaneesh Singh, Sanjay Puri, Hiranmaya Mishra</div><div class="v">Gribov-80 Memorial Volume: Quantum Chromodynamics and Beyond (World Scientific), 527–540 (2011)</div></div>
-<div class="pub-entry"><div class="t">Control of Structure Formation in Phase Separation</div><div class="a">Awaneesh Singh, Anupam Mukherjee, Sanjay Puri, G. Barkema</div><div class="v">American Institute of Physics Conference Series, 1091, 293 (2009)</div></div>
-</div>
-    </div>
-  </section>
-
-  <!-- PEOPLE -->
-  <section class="page" id="people" hidden>
-    <div class="wrap section-block" style="border-bottom:none;">
-      <h2 class="page-title">People</h2>
-
-      <div class="pi-card">
-        <img class="pi-photo" src="images/pi.jpg" alt="Dr. Awaneesh Singh">
-        <div class="col">
-          <h3>Dr. Awaneesh Singh</h3>
-          <div class="role">Associate Professor, Department of Physics, IIT (BHU) Varanasi</div>
-          <ul>
-            <li><span class="label">Email</span><a href="mailto:awaneesh.phy@iitbhu.ac.in">awaneesh.phy@iitbhu.ac.in</a></li>
-            <li><span class="label">Phone</span>+91-9873071126 · +91-5427165490</li>
-          </ul>
-        </div>
-        <div class="col">
-          <ul>
-            <li><span class="label">Education</span>Ph.D. Physics, JNU New Delhi (2010) — "Kinetics of Phase Transitions: From Quark Matter to Polymers," advised by Prof. Sanjay Puri<br>M.Sc. Physics, JNU New Delhi (2003)</li>
-          </ul>
-        </div>
-        <div style="flex-basis:100%;">
-          <span class="label" style="display:block;margin-bottom:6px;">Professional experience</span>
-          <ul style="font-size:0.88rem;">
-            <li>Associate Professor, Dept. of Physics, IIT (BHU) Varanasi — Dec 2024–present</li>
-            <li>Assistant Professor, Dept. of Physics, IIT (BHU) Varanasi — May 2018–Dec 2024</li>
-            <li>Assistant Professor (UGC), Dept. of Physics, ICT Mumbai — Mar 2017–May 2018</li>
-            <li>Postdoc, Chemical &amp; Petroleum Engineering, University of Pittsburgh, USA (with Prof. Anna C. Balazs) — Dec 2014–Oct 2016</li>
-            <li>Postdoc, School of Physical Sciences, JNU New Delhi (with Prof. Sanjay Puri) — Sep 2013–Oct 2014</li>
-            <li>Postdoc, Dept. of Polymer Science &amp; Engineering, UMass Amherst, USA (with Prof. Murugappan Muthukumar) — Dec 2011–Aug 2013</li>
-            <li>Postdoc, Dept. of Physics, IISc Bengaluru (with Prof. Chandan Dasgupta) — Oct 2010–Nov 2011</li>
-          </ul>
-        </div>
-      </div>
-
-      <h3 class="subsection-title">Current members</h3>
-<div class="member-group"><h4>Ph.D.</h4><div class="member-grid">
-<div class="member-card">
-     <img class="member-photo" src="images/devendra-kumar.jpeg" alt="Devendra Kumar">
-      <div class="name">Devendra Kumar Verma</div>
-      <span class="roll">21171003 · SRF</span>
-      <div class="topic">Regulation of phase-separating structures in soft materials</div>
-      
-    </div>
-<div class="member-card">
-    <img class="member-photo" src="images/vanshika-saini.jpg" alt="Vanshika Saini">
-    <div class="name">Vanshika Saini</div>
-    <span class="roll">22171516 · JRF & PMRF</span>
-    <div class="topic">Phase separation kinetics in complex soft materials</div>
-      
-    </div>
-<div class="member-card">
-      <img class="member-photo" src="images/ankita-gupta.jpg" alt="Ankita Gupta">
-      <div class="name">Ankita Gupta</div>
-      <span class="roll">23171005 · TA & PMRF</span>
-      <div class="topic">Regulating nanostructure and dynamic properties of phase-separating materials</div>
-      
-    </div>
-<div class="member-card">
-      <div class="avatar">KK</div>
-      <div class="name">Kanika Kumari</div>
-      <span class="roll">24171014 · JRF</span>
-      <div class="topic">Segregation kinetics of polymers: effect of topology, architecture, size, and affinity</div>
-      
-    </div>
-<div class="member-card">
-      <div class="avatar">AC</div>
-      <div class="name">Ayushi Choudhary</div>
-      <span class="roll">24171509 · TA via CRG project</span>
-      <div class="topic">Phase separating charged polymer fluids</div>
-      
-    </div>
-  
-<div class="member-card">
-    <img class="member-photo" src="images/sarvendra-singh-yadav.jpg" alt="Sarvendra Singh Yadav">
-    <div class="name">Sarvendra Singh Yadav</div>
-    <span class="roll">24171505 · JRF</span>
-    <div class="topic">Kinetics of charged macromolecules</div>
-</div>
-
-<div class="member-card">
-    <img class="member-photo" src="images/sanjeev-kumar.jpg" alt="Sanjeev Kumar">
-    <div class="name">Sanjeev Kumar</div>
-    <span class="roll">24171515 · JRF</span>
-    <div class="topic">Self-assembly of block copolymers</div>
-</div>
-  
-<div class="member-card">
-      <div class="avatar">SV</div>
-      <div class="name">Simran Vishwakarma</div>
-      <span class="roll">25171010 · TA</span>
-      <div class="topic">Kinetics of self-assembly and structural transitions in complex soft materials</div>
-      
-    </div>
-<div class="member-card">
-      <div class="avatar">RP</div>
-      <div class="name">Rishita Pathak</div>
-      <span class="roll">26171001 · TA</span>
-      <div class="topic">Self-assembly of charged amphiphilic copolymers and nanogels</div>
-      
-    </div>
-</div></div>
-<div class="member-group"><h4>Postdoc</h4>
-<div class="member-card">
-      <img class="member-photo" src="images/reshmi.jpg" alt="Reshmi Roy">
-      <div class="name">Reshmi Roy</div>
-      <span class="roll"> </span>
-      <div class="topic">​​Photochemically Activated Janus Colloids in Phase-Separating Fluids: Hydrodynamic Mechanisms and Mesoscale Dynamics</div>
-      
-    </div>
-</div>
-<div class="member-group"><h4>M.Tech. Thesis</h4>
-<div class="member-row"><div class="name">Yashaswini Singh<span class="roll"> · 22174025</span></div><div class="topic">Machine learning-assisted reaction-modulated segregation kinetics of polymer solutions</div></div>
-</div>
-<div class="member-group"><h4>M.Sc. Thesis</h4>
-<div class="member-row"><div class="name">Suryakant Shukla<span class="roll"> · 25177011</span></div><div class="topic">Transformative Self-Assembly: From Zwitterion to Dynamic Vesicle Formation</div></div>
-</div>
-<div class="member-group"><h4>UG Project</h4>
-<div class="member-row"><div class="name">Bhargavi A Potty<span class="roll"> · 23174009</span></div><div class="topic">ML-Driven Insights into Polymer Segregation Kinetics</div></div>
-<div class="member-row"><div class="name">Kutubkhan Hasanbhai Bhatiya<span class="roll"> · 23174015</span></div><div class="topic">ML Exploration of Coil-Globule Dynamics</div></div>
-</div>
-<h3 class="subsection-title">Alumni</h3>
-<div class="member-group"><h4>Ph.D.</h4><div class="member-grid">
-<div class="member-card">
-      <img class="member-photo" src="images/avinash.jpeg" alt="Avinash Chauhan">
-      <div class="name">Avinash Chauhan</div>
-      <span class="roll">18171504</span>
-      <div class="topic">Morphology evolution and kinetics of phase-separating block copolymer systems</div>
-      <div class="status">Postdoc, Physics Dept., IISER Mohali, Punjab</div>
-      
-    </div>
-<div class="member-card">
-     <img class="member-photo" src="images/samiksha-shrivastav.jpeg" alt="Samiksha Shrivastav">
-      <div class="name">Samiksha Shrivastav</div>
-      <span class="roll">19171001</span>
-      <div class="topic">Segregation kinetics and applications of brush-modified surfaces</div>
-      <div class="status">Postdoc, Dept. of Chemical & Biological Engineering, HKUST, Hong Kong</div>
-      
-    </div>
-<div class="member-card">
-     <img class="member-photo" src="images/ashish-singh.jpeg" alt="Ashish Kumar Singh">
-      <div class="name">Ashish Kumar Singh</div>
-      <span class="roll">19171023</span>
-      <div class="topic">Self-assembly of polymer fluids under external stimuli</div>
-      <div class="status">Postdoc, Molecular and Statistical Biophysics group, SISSA, Trieste, Italy</div>
-      
-    </div>
-</div></div>
-<div class="member-group"><h4>M.Sc. Thesis</h4>
-<div class="member-row"><div class="name">Rishita Pathak<span class="roll"> · 24177002</span></div><div class="status">Pursuing PhD at IIT (BHU)</div></div>
-<div class="member-row"><div class="name">Abinash Mondal<span class="roll"> · 23177001</span></div><div class="status">Pursuing PhD at RRI</div></div>
-<div class="member-row"><div class="name">Kuldeep Kumar<span class="roll"> · 22177012</span></div><div class="status">Teaching at Narayana Coaching, Hyderabad</div></div>
-<div class="member-row"><div class="name">Ankita Gupta<span class="roll"> · 21177005</span></div><div class="status">Pursuing PhD at IIT (BHU), PMRF Fellow</div></div>
-<div class="member-row"><div class="name">Anish Kumar<span class="roll"> · 20177003</span></div><div class="status">Pursuing PhD at IIT (BHU), PMRF Fellow</div></div>
-<div class="member-row"><div class="name">Sachin Verma<span class="roll"> · 20177020</span></div><div class="status">Pursuing PhD at IIT (BHU), PMRF Fellow</div></div>
-<div class="member-row"><div class="name">Kamlesh Mishra<span class="roll"> · 19177006</span></div><div class="status">Pursuing PhD at JNCASR</div></div>
-</div>
-<div class="member-group"><h4>M.Tech. Thesis</h4>
-<div class="member-row"><div class="name">Sameer Wanjari<span class="roll"> · 21174028</span></div></div>
-<div class="member-row"><div class="name">Rishikesh Sahu<span class="roll"> · 21174019</span></div></div>
-<div class="member-row"><div class="name">Ritika Mishra<span class="roll"> · 20174015</span></div><div class="status">Quantitative Strategist, Goldman Sachs, Bangalore (since Jul 2025)</div></div>
-<div class="member-row"><div class="name">Kushagra Sachan<span class="roll"> · 18173009</span></div><div class="status">Software Developer, Walmart Global Tech, Bangalore (since Oct 2024)</div></div>
-<div class="member-row"><div class="name">Abhinash Daulaguphu<span class="roll"> · 17173001</span></div><div class="status">Product Manager, Docsumo (since Oct 2024)</div></div>
-<div class="member-row"><div class="name">Aditya N Meshram<span class="roll"> · 16173003</span></div></div>
-</div>
-<div class="member-group"><h4>UG Project</h4>
-<div class="member-row"><div class="name">Yashaswini Singh<span class="roll"> · 22174025</span></div></div>
-<div class="member-row"><div class="name">Ishaan Vivek Goel<span class="roll"> · 22174010</span></div></div>
-<div class="member-row"><div class="name">Sameer Wanjari<span class="roll"> · 21174028</span></div></div>
-<div class="member-row"><div class="name">Sushant Baranawal<span class="roll"> · 20174020</span></div></div>
-<div class="member-row"><div class="name">Aman Jain<span class="roll"> · 17173004</span></div></div>
-<div class="member-row"><div class="name">Prabhat Kumar<span class="roll"> · 17173011</span></div></div>
-</div>
-<div class="member-group"><h4>Exploratory Project</h4>
-<div class="member-row"><div class="name">Satyam Sinha<span class="roll"> · 23174030</span></div></div>
-<div class="member-row"><div class="name">Yashaswini Singh<span class="roll"> · 22174025</span></div></div>
-<div class="member-row"><div class="name">Ajeya P. Krishna<span class="roll"> · 17173003</span></div></div>
-</div>
-    </div>
-  </section>
-
-  <!-- GALLERY -->
-  <section class="page" id="gallery" hidden>
-    <div class="wrap section-block" style="border-bottom:none;">
-      <h2 class="page-title">Gallery</h2>
-      <p class="page-intro">Moments from the lab.</p>
-      <div class="gallery-frame">
-        <img src="images/lab-group.jpg" alt="Group of lab members gathered together indoors">
-      </div>
-      <p class="gallery-caption">The group, together.</p>
-      <div class="gallery-note">More photos will be added here over time.</div>
-    </div>
-  </section>
-
-  <!-- CONTACT -->
-  <section class="page" id="contact" hidden>
-    <div class="wrap section-block" style="border-bottom:none;">
-      <h2 class="page-title">Contact</h2>
-      <p class="page-intro">Department of Physics, IIT (BHU) Varanasi.</p>
-      <div class="contact-grid">
-        <ul class="contact-list">
-          <li><span class="label">Principal Investigator</span>Dr. Awaneesh Singh, Associate Professor</li>
-          <li><span class="label">Address</span>Department of Physics, Indian Institute of Technology (BHU), Varanasi – 221005, India</li>
-          <li><span class="label">Email</span><a href="mailto:awaneesh.phy@iitbhu.ac.in">awaneesh.phy@iitbhu.ac.in</a></li>
-          <li><span class="label">Phone</span>+91-9873071126 · +91-5427165490</li>
-        </ul>
-        <div class="map-frame">
-          <iframe src="https://maps.google.com/maps?q=Department+of+Physics+IIT+BHU+Varanasi&z=16&output=embed" title="Map of Department of Physics, IIT (BHU) Varanasi" loading="lazy"></iframe>
-        </div>
-      </div>
-    </div>
-  </section>
-
-</main>
-
-<footer class="wrap">
-  <div class="footer-row">
-    <div>Soft Matter &amp; Statistical Physics Group — IIT (BHU) Varanasi</div>
-    <ul class="footer-links">
-      <li><a href="mailto:awaneesh.phy@iitbhu.ac.in">Email</a></li>
-      <li><a href="#people">People</a></li>
-      <li><a href="#publications">Publications</a></li>
-    </ul>
-  </div>
-</footer>
-
-<script>
-  var sections = ['home','research','publications','people','gallery','contact'];
-
-  function showSection(id){
-    if (sections.indexOf(id) === -1) id = 'home';
-    sections.forEach(function(s){
-      document.getElementById(s).hidden = (s !== id);
-    });
-    document.querySelectorAll('nav a').forEach(function(a){
-      a.classList.toggle('active', a.dataset.target === id);
+    // Flip cards in the People page.
+    document.querySelectorAll('.member-card').forEach(function (card) {
+      card.addEventListener('click', function () {
+        card.classList.toggle('is-flipped');
+      });
     });
   }
-
-  window.addEventListener('hashchange', function(){
-    showSection(location.hash.replace('#',''));
-    window.scrollTo(0,0);
-  });
-
-  showSection(location.hash.replace('#','') || 'home');
-
-  var toggle = document.getElementById('themeToggle');
-  toggle.addEventListener('click', function(){
-    var current = document.documentElement.getAttribute('data-theme');
-    document.documentElement.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
-  });
-
-  // Hero image carousel: crosses-fades between images every few seconds.
-  (function(){
-    var carousel = document.getElementById('heroCarousel');
-    if (!carousel) return;
-    var imgs = carousel.querySelectorAll('img');
-    var caption = document.getElementById('heroCarouselCap');
-    if (imgs.length < 2) return;
-    var i = 0;
-    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduceMotion) return;
-    setInterval(function(){
-      imgs[i].classList.remove('is-active');
-      i = (i + 1) % imgs.length;
-      imgs[i].classList.add('is-active');
-      if (caption) caption.textContent = imgs[i].getAttribute('data-caption') || '';
-    }, 4500);
-  })();
 </script>
 
 </body>
