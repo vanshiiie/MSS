@@ -545,70 +545,44 @@ a.pub-entry:hover{
   }
 
 /* =========================================================
-   PEOPLE — MOBILE PHONE
+   PEOPLE — MOBILE
    ========================================================= */
 
 @media (max-width: 700px) {
 
-  /* One person per row */
   .member-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 18px;
-    width: 100%;
+    gap: 20px;
   }
 
-  /* Individual person's card */
   .member-card {
     width: 100%;
-    height: 430px;
-    min-width: 0;
-    perspective: 1200px;
+    height: 420px;
   }
 
-  /* Flip container */
-  .member-card .card-inner {
-    width: 100%;
-    height: 100%;
-    position: relative;
-  }
-
-  /* Front and back */
-  .member-card .card-front,
-  .member-card .card-back {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    box-sizing: border-box;
-    padding: 20px;
-    overflow: hidden;
-  }
-
-  /* MOBILE FRONT:
-     photo on top, text underneath */
   .member-card .card-front {
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
-    gap: 0;
+    padding: 22px;
   }
 
-  /* Photo */
+  .member-card .card-back {
+    padding: 22px;
+    overflow-y: auto;
+  }
+
   .member-card .member-photo,
   .member-card .avatar {
-    width: 125px;
-    height: 125px;
-    flex: none;
-    margin: 0 auto 18px auto;
-    border-radius: 10px;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 18px;
   }
 
-  /* Text area */
   .member-card .card-body {
     width: 100%;
-    min-width: 0;
     flex: none;
   }
 
@@ -620,57 +594,32 @@ a.pub-entry:hover{
 
   .member-card .roll {
     font-size: 0.8rem;
-    line-height: 1.4;
     margin-bottom: 12px;
   }
 
   .member-card .topic {
     font-size: 0.9rem;
-    line-height: 1.55;
-    overflow-wrap: anywhere;
+    line-height: 1.5;
   }
 
   .member-card .status {
     font-size: 0.82rem;
-    line-height: 1.5;
-    overflow-wrap: anywhere;
-    margin-top: 8px;
+    line-height: 1.45;
   }
 
-  /* Email / Website / LinkedIn */
   .member-card .member-links {
     justify-content: center;
     margin-top: 14px;
-    gap: 14px;
   }
 
-  .member-card .member-links a {
-    font-size: 0.8rem;
-  }
-
-  /* Tap to read more */
   .member-card .flip-hint {
-    margin-top: 18px;
-    font-size: 0.72rem;
-  }
-
-  /* Back side */
-  .member-card .card-back {
-    text-align: left;
-    overflow-y: auto;
-    overflow-x: hidden;
+    margin-top: 16px;
   }
 
   .member-card .bio {
-    width: 100%;
-    margin-top: 0;
-    padding-top: 0;
-    border-top: none;
     font-size: 0.88rem;
     line-height: 1.6;
-    overflow-wrap: anywhere;
   }
-
 }
 
 
@@ -681,7 +630,7 @@ a.pub-entry:hover{
 @media (max-width: 420px) {
 
   .member-card {
-    height: 410px;
+    height: 400px;
   }
 
   .member-card .card-front,
@@ -691,9 +640,8 @@ a.pub-entry:hover{
 
   .member-card .member-photo,
   .member-card .avatar {
-    width: 105px;
-    height: 105px;
-    margin-bottom: 15px;
+    width: 100px;
+    height: 100px;
   }
 
   .member-card .name {
@@ -701,7 +649,7 @@ a.pub-entry:hover{
   }
 
   .member-card .topic {
-    font-size: 0.86rem;
+    font-size: 0.85rem;
   }
 
 }
