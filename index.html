@@ -31,9 +31,96 @@
   </div>
 </header>
 
-<main>
+<main id="sectionsRoot">
+  <div class="wrap section-block" id="loadingNotice">
+    <p style="color:var(--ink-soft);">Loading…</p>
+  </div>
+</main>
 
-  <!-- HOME -->
+<footer class="wrap">
+  <div class="footer-row">
+    <div>Soft Matter &amp; Statistical Physics Group — IIT (BHU) Varanasi</div>
+    <ul class="footer-links">
+      <li><a href="mailto:awaneesh.phy@iitbhu.ac.in">Email</a></li>
+      <li><a href="#people">People</a></li>
+      <li><a href="#publications">Publications</a></li>
+    </ul>
+  </div>
+</footer>
+
+<script>
+  // The page content lives in separate files under /sections/ — one per
+  // nav item — so each page can be edited on its own without scrolling
+  // through one giant HTML file. This script loads them all once, then
+  // wires up the same hash-based navigation as before.
+  var SECTION_IDS = ['home', 'research', 'publications', 'people', 'gallery', 'contact'];
+  var root = document.getElementById('sectionsRoot');
+
+  Promise.all(
+    SECTION_IDS.map(function (id) {
+      return fetch('sections/' + id + '.html').then(function (r) {
+        if (!r.ok) throw new Error('Failed to load sections/' + id + '.html (' + r.status + ')');
+        return r.text();
+      });
+    })
+  ).then(function (htmlParts) {
+    root.innerHTML = htmlParts.join('\n');
+    initPage();
+  }).catch(function (err) {
+    root.innerHTML =
+      '<div class="wrap section-block"><p style="color:var(--ink-soft);">' +
+      'Could not load the page content. If you just edited a file under sections/, ' +
+      'double-check the filename matches exactly, then refresh.</p></div>';
+    console.error(err);
+  });
+
+  function initPage() {
+    function showSection(id) {
+      if (SECTION_IDS.indexOf(id) === -1) id = 'home';
+      SECTION_IDS.forEach(function (s) {
+        var el = document.getElementById(s);
+        if (el) el.hidden = (s !== id);
+      });
+      document.querySelectorAll('nav a').forEach(function (a) {
+        a.classList.toggle('active', a.dataset.target === id);
+      });
+    }
+
+    window.addEventListener('hashchange', function () {
+      showSection(location.hash.replace('#', ''));
+      window.scrollTo(0, 0);
+    });
+
+    showSection(location.hash.replace('#', '') || 'home');
+
+    var toggle = document.getElementById('themeToggle');
+    toggle.addEventListener('click', function () {
+      var current = document.documentElement.getAttribute('data-theme');
+      document.documentElement.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+    });
+
+    // Hero image carousel: cross-fades between images every few seconds.
+    (function () {
+      var carousel = document.getElementById('heroCarousel');
+      if (!carousel) return;
+      var imgs = carousel.querySelectorAll('img');
+      var caption = document.getElementById('heroCarouselCap');
+      if (imgs.length < 2) return;
+      var i = 0;
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduceMotion) return;
+      setInterval(function () {
+        imgs[i].classList.remove('is-active');
+        i = (i + 1) % imgs.length;
+        imgs[i].classList.add('is-active');
+        if (caption) caption.textContent = imgs[i].getAttribute('data-caption') || '';
+      }, 4500);
+    })();
+  }
+</script>
+
+</body>
+</html>
   <section class="page" id="home">
     <div class="hero wrap">
       <div class="hero-inner">
