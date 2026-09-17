@@ -303,10 +303,21 @@
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 20px;
   }
-  .member-card{
+
+.member-card{
     border: 1px solid var(--line);
     padding: 16px;
-  }
+}
+
+.member-photo{
+    width: 84px;
+    height: 84px;
+    border-radius: 8px;
+    object-fit: cover;
+    background: var(--paper-2);
+    margin-bottom: 12px;
+    display: block;
+}
   .member-card .avatar{
     width: 84px;
     height: 84px;
