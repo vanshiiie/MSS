@@ -545,111 +545,66 @@ a.pub-entry:hover{
   }
 
 /* =========================================================
-   PEOPLE — MOBILE
+   MOBILE PEOPLE CARDS
    ========================================================= */
-
 @media (max-width: 700px) {
 
+  /* One person per row */
   .member-grid {
-    display: grid;
     grid-template-columns: 1fr;
-    gap: 20px;
+    gap: 16px;
   }
 
+  /* Full-width card */
   .member-card {
     width: 100%;
-    height: 420px;
+    height: 340px;
   }
 
+  /* Stack photo above text */
   .member-card .card-front {
-    display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: flex-start;
     text-align: center;
-    padding: 22px;
+    gap: 10px;
+    padding: 20px;
   }
 
-  .member-card .card-back {
-    padding: 22px;
-    overflow-y: auto;
-  }
-
+  /* Keep photos a good size */
   .member-card .member-photo,
   .member-card .avatar {
-    width: 120px;
-    height: 120px;
-    margin: 0 auto 18px;
+    width: 100px;
+    height: 100px;
+    flex: none;
+    margin-bottom: 4px;
   }
 
+  /* Text uses the complete card width */
   .member-card .card-body {
     width: 100%;
     flex: none;
   }
 
   .member-card .name {
-    font-size: 1.15rem;
-    line-height: 1.3;
-    margin-bottom: 5px;
+    font-size: 1.05rem;
   }
 
   .member-card .roll {
-    font-size: 0.8rem;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
   }
 
   .member-card .topic {
-    font-size: 0.9rem;
-    line-height: 1.5;
-  }
-
-  .member-card .status {
-    font-size: 0.82rem;
+    font-size: 0.88rem;
     line-height: 1.45;
   }
 
   .member-card .member-links {
     justify-content: center;
-    margin-top: 14px;
   }
 
   .member-card .flip-hint {
-    margin-top: 16px;
+    text-align: center;
+    margin-top: 10px;
   }
-
-  .member-card .bio {
-    font-size: 0.88rem;
-    line-height: 1.6;
-  }
-}
-
-
-/* =========================================================
-   VERY SMALL PHONES
-   ========================================================= */
-
-@media (max-width: 420px) {
-
-  .member-card {
-    height: 400px;
-  }
-
-  .member-card .card-front,
-  .member-card .card-back {
-    padding: 18px;
-  }
-
-  .member-card .member-photo,
-  .member-card .avatar {
-    width: 100px;
-    height: 100px;
-  }
-
-  .member-card .name {
-    font-size: 1.05rem;
-  }
-
-  .member-card .topic {
-    font-size: 0.85rem;
-  }
-
 }
