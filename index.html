@@ -98,6 +98,11 @@
       var current = document.documentElement.getAttribute('data-theme');
       document.documentElement.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
     });
+    document.querySelectorAll('.member-card').forEach(function (card) {
+  card.addEventListener('click', function () {
+    card.classList.toggle('is-flipped');
+  });
+});
 
     // Hero image carousel: cross-fades between images every few seconds.
     (function () {
