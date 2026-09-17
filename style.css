@@ -303,21 +303,10 @@
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 20px;
   }
-
-.member-card{
+  .member-card{
     border: 1px solid var(--line);
     padding: 16px;
-}
-
-.member-photo{
-    width: 84px;
-    height: 84px;
-    border-radius: 8px;
-    object-fit: cover;
-    background: var(--paper-2);
-    margin-bottom: 12px;
-    display: block;
-}
+  }
   .member-card .avatar{
     width: 84px;
     height: 84px;
@@ -460,4 +449,37 @@
     display:inline;
     font-size: inherit;
     color: var(--ink-soft);
+  }
+
+  /* ---------- Member links & bio (added) ---------- */
+  .member-links{
+    margin-top: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 0.78rem;
+  }
+  .member-links a{
+    color: var(--ink-soft);
+    text-decoration: none;
+    border-bottom: 1px solid var(--line);
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+  .member-links a:hover{
+    color: var(--ink);
+    border-color: var(--ink);
+  }
+  .bio{
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+    font-size: 0.82rem;
+    line-height: 1.55;
+    color: var(--ink-soft);
+  }
+  .bio p{
+    margin: 0 0 8px;
+  }
+  .bio p:last-child{
+    margin-bottom: 0;
   }
