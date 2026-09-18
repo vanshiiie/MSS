@@ -214,11 +214,15 @@
       if (prev) {
         prev.addEventListener('click', function () { previousCover(); startAutoPlay(); });
       }
-      dots.forEach(function (dot, i) {
-        dot.addEventListener('click', function () { showCover(i); startAutoPlay(); });
+      
+      dots.forEach(function (dot, index) {
+        dot.addEventListener('click', function () {
+          showCover(index);
+          startAutoPlay();
+        });
       });
 
-      showCover(0);
+      // Start the automatic rotation
       startAutoPlay();
     })();
 
@@ -243,8 +247,13 @@
         }
       });
     });
-  }
+
+  } // This closes the main initPage() function
 </script>
+
+</body>
+</html>
+
 
 </body>
 </html>
