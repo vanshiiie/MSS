@@ -1,37 +1,27 @@
 <script>
-  // ============================================================
-  // SECTION LOADING
-  // ============================================================
-  var SECTION_IDS = [
-    'home',
-    'research',
-    'publications',
-    'people',
-    'gallery',
-    'contact'
-  ];
+  // Content for each navigation item lives in its own file under sections/.
+  // All sections are loaded first, then the correct section is shown
+  // according to the URL hash.
 
+  var SECTION_IDS = ['home', 'research', 'publications', 'people', 'gallery', 'contact'];
   var root = document.getElementById('sectionsRoot');
 
   Promise.all(
     SECTION_IDS.map(function (id) {
-      return fetch('sections/' + id + '.html').then(function (response) {
-        if (!response.ok) {
+      return fetch('sections/' + id + '.html').then(function (r) {
+        if (!r.ok) {
           throw new Error(
-            'Failed to load sections/' + id + '.html (' +
-            response.status +
-            ')'
+            'Failed to load sections/' + id + '.html (' + r.status + ')'
           );
         }
-        return response.text();
+        return r.text();
       });
     })
-  )
-  .then(function (htmlParts) {
+  ).then(function (htmlParts) {
     root.innerHTML = htmlParts.join('\n');
+    forceCorrectVisibility();
     initPage();
-  })
-  .catch(function (error) {
+  }).catch(function (err) {
     root.innerHTML =
       '<div class="wrap section-block">' +
       '<p style="color:var(--ink-soft);">' +
@@ -40,70 +30,78 @@
       '</p>' +
       '</div>';
 
-    console.error(error);
+    console.error(err);
   });
 
 
-  // ============================================================
-  // PAGE INITIALIZATION
-  // ============================================================
+  function forceCorrectVisibility() {
+    var target = location.hash.replace('#', '') || 'home';
+
+    if (SECTION_IDS.indexOf(target) === -1) {
+      target = 'home';
+    }
+
+    SECTION_IDS.forEach(function (id) {
+      var el = document.getElementById(id);
+
+      if (el) {
+        el.hidden = (id !== target);
+      }
+    });
+  }
+
+
   function initPage() {
 
-    // ----------------------------------------------------------
-    // Navigation
-    // ----------------------------------------------------------
+    // ==========================================================
+    // NAVIGATION
+    // ==========================================================
     function showSection(id) {
 
       if (SECTION_IDS.indexOf(id) === -1) {
         id = 'home';
       }
 
-      SECTION_IDS.forEach(function (sectionId) {
-        var section = document.getElementById(sectionId);
+      SECTION_IDS.forEach(function (s) {
+        var el = document.getElementById(s);
 
-        if (section) {
-          section.hidden = (sectionId !== id);
+        if (el) {
+          el.hidden = (s !== id);
         }
       });
 
-      document.querySelectorAll('nav a').forEach(function (link) {
-        link.classList.toggle(
+      document.querySelectorAll('nav a').forEach(function (a) {
+        a.classList.toggle(
           'active',
-          link.getAttribute('data-target') === id
+          a.dataset.target === id
         );
       });
     }
 
 
-    // Show correct section when page loads
-    var initialSection = window.location.hash.substring(1) || 'home';
-    showSection(initialSection);
-
-
-    // Change section when hash changes
     window.addEventListener('hashchange', function () {
-      var section = window.location.hash.substring(1) || 'home';
-
-      showSection(section);
-
+      showSection(location.hash.replace('#', ''));
       window.scrollTo(0, 0);
     });
 
 
-    // ==========================================================
-    // DARK / LIGHT MODE
-    // ==========================================================
-    var themeToggle = document.getElementById('themeToggle');
+    showSection(location.hash.replace('#', '') || 'home');
 
-    if (themeToggle) {
-      themeToggle.addEventListener('click', function () {
 
-        var currentTheme =
+    // ==========================================================
+    // DARK MODE
+    // ==========================================================
+    var toggle = document.getElementById('themeToggle');
+
+    if (toggle) {
+      toggle.addEventListener('click', function () {
+
+        var current =
           document.documentElement.getAttribute('data-theme');
 
         document.documentElement.setAttribute(
           'data-theme',
-          currentTheme === 'dark' ? 'light' : 'dark'
+          current === 'dark' ? 'light' : 'dark'
         );
 
       });
@@ -115,46 +113,48 @@
     // ==========================================================
     (function () {
 
-      var carousel = document.getElementById('heroCarousel');
+      var carousel =
+        document.getElementById('heroCarousel');
 
       if (!carousel) {
         return;
       }
 
-      var images = carousel.querySelectorAll('img');
-      var caption = document.getElementById('heroCarouselCap');
+      var imgs =
+        carousel.querySelectorAll('img');
 
-      if (images.length < 2) {
+      var caption =
+        document.getElementById('heroCarouselCap');
+
+      if (imgs.length < 2) {
         return;
       }
 
-      var currentIndex = 0;
+      var i = 0;
 
       var reduceMotion =
         window.matchMedia &&
-        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        window.matchMedia(
+          '(prefers-reduced-motion: reduce)'
+        ).matches;
 
       if (reduceMotion) {
         return;
       }
 
-      function showHeroImage(index) {
+      setInterval(function () {
 
-        images[currentIndex].classList.remove('is-active');
+        imgs[i].classList.remove('is-active');
 
-        currentIndex =
-          (index + images.length) % images.length;
+        i = (i + 1) % imgs.length;
 
-        images[currentIndex].classList.add('is-active');
+        imgs[i].classList.add('is-active');
 
         if (caption) {
           caption.textContent =
-            images[currentIndex].getAttribute('data-caption') || '';
+            imgs[i].getAttribute('data-caption') || '';
         }
-      }
 
-      window.setInterval(function () {
-        showHeroImage(currentIndex + 1);
       }, 4500);
 
     })();
@@ -178,135 +178,95 @@
       var dots =
         carousel.querySelectorAll('#coverDots button');
 
-      var previousButton =
+      var prev =
         document.getElementById('coverPrev');
 
-      var nextButton =
+      var next =
         document.getElementById('coverNext');
 
       if (slides.length === 0) {
         return;
       }
 
-      var currentIndex = 0;
-      var autoPlayTimer = null;
+      var current = 0;
+      var timer = null;
 
       var reduceMotion =
         window.matchMedia &&
-        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        window.matchMedia(
+          '(prefers-reduced-motion: reduce)'
+        ).matches;
 
 
-      // --------------------------------------------------------
-      // Display one cover
-      // --------------------------------------------------------
       function showCover(index) {
 
-        currentIndex =
+        current =
           (index + slides.length) % slides.length;
 
         slides.forEach(function (slide, i) {
           slide.classList.toggle(
             'is-active',
-            i === currentIndex
+            i === current
           );
         });
 
         dots.forEach(function (dot, i) {
           dot.classList.toggle(
             'is-active',
-            i === currentIndex
+            i === current
           );
         });
       }
 
 
-      // --------------------------------------------------------
-      // Next cover
-      // --------------------------------------------------------
       function nextCover() {
-        showCover(currentIndex + 1);
+        showCover(current + 1);
       }
 
 
-      // --------------------------------------------------------
-      // Previous cover
-      // --------------------------------------------------------
       function previousCover() {
-        showCover(currentIndex - 1);
+        showCover(current - 1);
       }
 
 
-      // --------------------------------------------------------
-      // Automatic rotation
-      // --------------------------------------------------------
       function startAutoPlay() {
 
         if (reduceMotion) {
           return;
         }
 
-        if (autoPlayTimer !== null) {
-          window.clearInterval(autoPlayTimer);
-        }
+        clearInterval(timer);
 
-        autoPlayTimer =
-          window.setInterval(function () {
-            nextCover();
-          }, 5000);
+        timer = setInterval(function () {
+          nextCover();
+        }, 5000);
       }
 
 
-      // --------------------------------------------------------
-      // Next button
-      // --------------------------------------------------------
-      if (nextButton) {
-        nextButton.addEventListener('click', function () {
+      if (next) {
+        next.addEventListener('click', function () {
           nextCover();
           startAutoPlay();
         });
       }
 
 
-      // --------------------------------------------------------
-      // Previous button
-      // --------------------------------------------------------
-      if (previousButton) {
-        previousButton.addEventListener('click', function () {
+      if (prev) {
+        prev.addEventListener('click', function () {
           previousCover();
           startAutoPlay();
         });
       }
 
 
-      // --------------------------------------------------------
-      // Navigation dots
-      // --------------------------------------------------------
-      dots.forEach(function (dot, index) {
+      dots.forEach(function (dot, i) {
         dot.addEventListener('click', function () {
-          showCover(index);
+          showCover(i);
           startAutoPlay();
         });
       });
 
 
-      // --------------------------------------------------------
-      // Pause while mouse is over carousel
-      // --------------------------------------------------------
-      carousel.addEventListener('mouseenter', function () {
-        if (autoPlayTimer !== null) {
-          window.clearInterval(autoPlayTimer);
-          autoPlayTimer = null;
-        }
-      });
-
-      carousel.addEventListener('mouseleave', function () {
-        startAutoPlay();
-      });
-
-
-      // --------------------------------------------------------
-      // Start
-      // --------------------------------------------------------
       showCover(0);
       startAutoPlay();
 
@@ -316,577 +276,43 @@
     // ==========================================================
     // PEOPLE FLIP CARDS
     // ==========================================================
-    (function () {
-
-      var cards =
-        document.querySelectorAll('.member-card');
-
-      if (cards.length === 0) {
-        return;
-      }
-
-      cards.forEach(function (card) {
-
-        // Mouse / touch click
-        card.addEventListener('click', function (event) {
-
-          // Do not flip if a link inside the card was clicked
-          if (event.target.closest &&
-              event.target.closest('a')) {
-            return;
-          }
-
-          card.classList.toggle('is-flipped');
-
-        });
-
-
-        // Keyboard accessibility
-        card.setAttribute('tabindex', '0');
-        card.setAttribute('role', 'button');
-
-        card.addEventListener('keydown', function (event) {
-
-          if (event.key === 'Enter' || event.key === ' ') {
-
-            event.preventDefault();
-
-            card.classList.toggle('is-flipped');
-
-          }
-
-        });
-
-      });
-
-    })();
-
-  }
-</script>  .catch(function (error) {
-    root.innerHTML =
-      '<div class="wrap section-block">' +
-      '<p style="color:var(--ink-soft);">' +
-      'Could not load the page content. If you just edited a file under sections/, ' +
-      'double-check the filename matches exactly, then refresh.' +
-      '</p>' +
-      '</div>';
-
-    console.error(error);
-  });
-
-
-  // ============================================================
-  // PAGE VISIBILITY
-  // ============================================================
-  function getCurrentSection() {
-    var target = window.location.hash.substring(1);
-
-    if (SECTION_IDS.indexOf(target) === -1) {
-      target = 'home';
-    }
-
-    return target;
-  }
-
-
-  function forceCorrectVisibility() {
-    var target = getCurrentSection();
-
-    SECTION_IDS.forEach(function (id) {
-      var section = document.getElementById(id);
-
-      if (section) {
-        section.hidden = (id !== target);
-      }
-    });
-  }
-
-
-  // ============================================================
-  // PAGE INITIALIZATION
-  // ============================================================
-  function initPage() {
-
-    // ----------------------------------------------------------
-    // Navigation
-    // ----------------------------------------------------------
-    function showSection(id) {
-
-      if (SECTION_IDS.indexOf(id) === -1) {
-        id = 'home';
-      }
-
-      SECTION_IDS.forEach(function (sectionId) {
-        var section = document.getElementById(sectionId);
-
-        if (section) {
-          section.hidden = (sectionId !== id);
-        }
-      });
-
-      var navLinks = document.querySelectorAll('nav a');
-
-      navLinks.forEach(function (link) {
-        var target = link.getAttribute('data-target');
-
-        if (target === id) {
-          link.classList.add('active');
-        } else {
-          link.classList.remove('active');
-        }
-      });
-    }
-
-
-    // Initial page
-    showSection(getCurrentSection());
-
-
-    // Change page when hash changes
-    window.addEventListener('hashchange', function () {
-      showSection(getCurrentSection());
-
-      window.scrollTo({
-        top: 0,
-        left: 0,
-        behavior: 'auto'
-      });
-    });
-
-
-    // ==========================================================
-    // DARK / LIGHT MODE
-    // ==========================================================
-    var themeToggle = document.getElementById('themeToggle');
-
-    if (themeToggle) {
-
-      themeToggle.addEventListener('click', function () {
-
-        var currentTheme =
-          document.documentElement.getAttribute('data-theme');
-
-        if (currentTheme === 'dark') {
-          document.documentElement.setAttribute(
-            'data-theme',
-            'light'
-          );
-        } else {
-          document.documentElement.setAttribute(
-            'data-theme',
-            'dark'
-          );
-        }
-
-      });
-
-    }
-
-
-    // ==========================================================
-    // HERO IMAGE CAROUSEL
-    // ==========================================================
-    (function () {
-
-      var carousel = document.getElementById('heroCarousel');
-
-      if (!carousel) {
-        return;
-      }
-
-      var images = carousel.querySelectorAll('img');
-      var caption = document.getElementById('heroCarouselCap');
-
-      if (images.length < 2) {
-        return;
-      }
-
-      var currentIndex = 0;
-
-      var reduceMotion = false;
-
-      if (window.matchMedia) {
-        reduceMotion =
-          window.matchMedia(
-            '(prefers-reduced-motion: reduce)'
-          ).matches;
-      }
-
-      if (reduceMotion) {
-        return;
-      }
-
-
-      function showHeroImage(index) {
-
-        images[currentIndex].classList.remove('is-active');
-
-        currentIndex =
-          (index + images.length) % images.length;
-
-        images[currentIndex].classList.add('is-active');
-
-        if (caption) {
-          caption.textContent =
-            images[currentIndex].getAttribute(
-              'data-caption'
-            ) || '';
-        }
-
-      }
-
-
-      window.setInterval(function () {
-        showHeroImage(currentIndex + 1);
-      }, 4500);
-
-    })();
-
-
-    // ==========================================================
-    // COVER ARTS CAROUSEL
-    // ==========================================================
-    (function () {
-
-      var carousel =
-        document.getElementById('coverCarousel');
-
-      if (!carousel) {
-        return;
-      }
-
-      var slides =
-        carousel.querySelectorAll('.cover-slide');
-
-      var dots =
-        carousel.querySelectorAll(
-          '#coverDots button'
-        );
-
-      var previousButton =
-        document.getElementById('coverPrev');
-
-      var nextButton =
-        document.getElementById('coverNext');
-
-
-      if (slides.length === 0) {
-        return;
-      }
-
-
-      var currentIndex = 0;
-      var autoPlayTimer = null;
-
-
-      var reduceMotion = false;
-
-      if (window.matchMedia) {
-        reduceMotion =
-          window.matchMedia(
-            '(prefers-reduced-motion: reduce)'
-          ).matches;
-      }
-
-
-      // --------------------------------------------------------
-      // Display one cover
-      // --------------------------------------------------------
-      function showCover(index) {
-
-        currentIndex =
-          (index + slides.length) % slides.length;
-
-
-        slides.forEach(function (slide, i) {
-
-          if (i === currentIndex) {
-            slide.classList.add('is-active');
-          } else {
-            slide.classList.remove('is-active');
-          }
-
-        });
-
-
-        dots.forEach(function (dot, i) {
-
-          if (i === currentIndex) {
-            dot.classList.add('is-active');
-            dot.setAttribute('aria-current', 'true');
-          } else {
-            dot.classList.remove('is-active');
-            dot.removeAttribute('aria-current');
-          }
-
-        });
-
-      }
-
-
-      // --------------------------------------------------------
-      // Next cover
-      // --------------------------------------------------------
-      function nextCover() {
-        showCover(currentIndex + 1);
-      }
-
-
-      // --------------------------------------------------------
-      // Previous cover
-      // --------------------------------------------------------
-      function previousCover() {
-        showCover(currentIndex - 1);
-      }
-
-
-      // --------------------------------------------------------
-      // Automatic rotation
-      // --------------------------------------------------------
-      function startAutoPlay() {
-
-        if (reduceMotion) {
+    document.querySelectorAll('.member-card').forEach(function (card) {
+
+      card.addEventListener('click', function (event) {
+
+        // Do not flip when clicking a link
+        if (
+          event.target.closest &&
+          event.target.closest('a')
+        ) {
           return;
         }
 
-        if (autoPlayTimer !== null) {
-          window.clearInterval(autoPlayTimer);
-        }
-
-        autoPlayTimer =
-          window.setInterval(function () {
-            nextCover();
-          }, 5000);
-
-      }
-
-
-      // --------------------------------------------------------
-      // Stop automatic rotation
-      // --------------------------------------------------------
-      function stopAutoPlay() {
-
-        if (autoPlayTimer !== null) {
-          window.clearInterval(autoPlayTimer);
-          autoPlayTimer = null;
-        }
-
-      }
-
-
-      // --------------------------------------------------------
-      // Next button
-      // --------------------------------------------------------
-      if (nextButton) {
-
-        nextButton.addEventListener(
-          'click',
-          function () {
-
-            nextCover();
-            startAutoPlay();
-
-          }
-        );
-
-      }
-
-
-      // --------------------------------------------------------
-      // Previous button
-      // --------------------------------------------------------
-      if (previousButton) {
-
-        previousButton.addEventListener(
-          'click',
-          function () {
-
-            previousCover();
-            startAutoPlay();
-
-          }
-        );
-
-      }
-
-
-      // --------------------------------------------------------
-      // Navigation dots
-      // --------------------------------------------------------
-      dots.forEach(function (dot, index) {
-
-        dot.addEventListener(
-          'click',
-          function () {
-
-            showCover(index);
-            startAutoPlay();
-
-          }
-        );
+        card.classList.toggle('is-flipped');
 
       });
 
 
-      // --------------------------------------------------------
-      // Pause while mouse is over carousel
-      // This prevents the cover from changing while somebody
-      // is trying to read the description.
-      // --------------------------------------------------------
-      carousel.addEventListener(
-        'mouseenter',
-        function () {
-          stopAutoPlay();
+      // Keyboard support
+      card.setAttribute('tabindex', '0');
+      card.setAttribute('role', 'button');
+
+      card.addEventListener('keydown', function (event) {
+
+        if (
+          event.key === 'Enter' ||
+          event.key === ' '
+        ) {
+
+          event.preventDefault();
+
+          card.classList.toggle('is-flipped');
+
         }
-      );
-
-
-      carousel.addEventListener(
-        'mouseleave',
-        function () {
-          startAutoPlay();
-        }
-      );
-
-
-      // --------------------------------------------------------
-      // Pause while finger is touching carousel on mobile
-      // --------------------------------------------------------
-      carousel.addEventListener(
-        'touchstart',
-        function () {
-          stopAutoPlay();
-        },
-        { passive: true }
-      );
-
-
-      carousel.addEventListener(
-        'touchend',
-        function () {
-          startAutoPlay();
-        },
-        { passive: true }
-      );
-
-
-      // --------------------------------------------------------
-      // Keyboard accessibility for carousel
-      // --------------------------------------------------------
-      if (previousButton) {
-        previousButton.setAttribute(
-          'aria-label',
-          'Previous cover'
-        );
-      }
-
-      if (nextButton) {
-        nextButton.setAttribute(
-          'aria-label',
-          'Next cover'
-        );
-      }
-
-
-      // --------------------------------------------------------
-      // Start with first cover
-      // --------------------------------------------------------
-      showCover(0);
-      startAutoPlay();
-
-    })();
-
-
-    // ==========================================================
-    // PEOPLE FLIP CARDS
-    // ==========================================================
-    (function () {
-
-      var cards =
-        document.querySelectorAll('.member-card');
-
-
-      if (cards.length === 0) {
-        return;
-      }
-
-
-      cards.forEach(function (card) {
-
-        // Make cards keyboard accessible
-        card.setAttribute('tabindex', '0');
-        card.setAttribute('role', 'button');
-        card.setAttribute('aria-pressed', 'false');
-
-
-        // ------------------------------------------------------
-        // Mouse / touch click
-        // ------------------------------------------------------
-        card.addEventListener(
-          'click',
-          function (event) {
-
-            // Do not flip when clicking a link inside the card.
-            var element = event.target;
-
-            while (element && element !== card) {
-
-              if (
-                element.tagName &&
-                element.tagName.toLowerCase() === 'a'
-              ) {
-                return;
-              }
-
-              element = element.parentNode;
-            }
-
-
-            var isFlipped =
-              card.classList.toggle('is-flipped');
-
-
-            card.setAttribute(
-              'aria-pressed',
-              isFlipped ? 'true' : 'false'
-            );
-
-          }
-        );
-
-
-        // ------------------------------------------------------
-        // Keyboard: Enter / Space
-        // ------------------------------------------------------
-        card.addEventListener(
-          'keydown',
-          function (event) {
-
-            if (
-              event.key === 'Enter' ||
-              event.key === ' '
-            ) {
-
-              event.preventDefault();
-
-
-              var isFlipped =
-                card.classList.toggle('is-flipped');
-
-
-              card.setAttribute(
-                'aria-pressed',
-                isFlipped ? 'true' : 'false'
-              );
-
-            }
-
-          }
-        );
 
       });
 
-    })();
+    });
 
   }
 </script>
