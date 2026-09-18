@@ -23,18 +23,346 @@
             ')'
           );
         }
-
         return response.text();
       });
     })
   )
   .then(function (htmlParts) {
     root.innerHTML = htmlParts.join('\n');
-
-    forceCorrectVisibility();
     initPage();
   })
   .catch(function (error) {
+    root.innerHTML =
+      '<div class="wrap section-block">' +
+      '<p style="color:var(--ink-soft);">' +
+      'Could not load the page content. If you just edited a file under sections/, ' +
+      'double-check the filename matches exactly, then refresh.' +
+      '</p>' +
+      '</div>';
+
+    console.error(error);
+  });
+
+
+  // ============================================================
+  // PAGE INITIALIZATION
+  // ============================================================
+  function initPage() {
+
+    // ----------------------------------------------------------
+    // Navigation
+    // ----------------------------------------------------------
+    function showSection(id) {
+
+      if (SECTION_IDS.indexOf(id) === -1) {
+        id = 'home';
+      }
+
+      SECTION_IDS.forEach(function (sectionId) {
+        var section = document.getElementById(sectionId);
+
+        if (section) {
+          section.hidden = (sectionId !== id);
+        }
+      });
+
+      document.querySelectorAll('nav a').forEach(function (link) {
+        link.classList.toggle(
+          'active',
+          link.getAttribute('data-target') === id
+        );
+      });
+    }
+
+
+    // Show correct section when page loads
+    var initialSection = window.location.hash.substring(1) || 'home';
+    showSection(initialSection);
+
+
+    // Change section when hash changes
+    window.addEventListener('hashchange', function () {
+      var section = window.location.hash.substring(1) || 'home';
+
+      showSection(section);
+
+      window.scrollTo(0, 0);
+    });
+
+
+    // ==========================================================
+    // DARK / LIGHT MODE
+    // ==========================================================
+    var themeToggle = document.getElementById('themeToggle');
+
+    if (themeToggle) {
+      themeToggle.addEventListener('click', function () {
+
+        var currentTheme =
+          document.documentElement.getAttribute('data-theme');
+
+        document.documentElement.setAttribute(
+          'data-theme',
+          currentTheme === 'dark' ? 'light' : 'dark'
+        );
+
+      });
+    }
+
+
+    // ==========================================================
+    // HERO IMAGE CAROUSEL
+    // ==========================================================
+    (function () {
+
+      var carousel = document.getElementById('heroCarousel');
+
+      if (!carousel) {
+        return;
+      }
+
+      var images = carousel.querySelectorAll('img');
+      var caption = document.getElementById('heroCarouselCap');
+
+      if (images.length < 2) {
+        return;
+      }
+
+      var currentIndex = 0;
+
+      var reduceMotion =
+        window.matchMedia &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      if (reduceMotion) {
+        return;
+      }
+
+      function showHeroImage(index) {
+
+        images[currentIndex].classList.remove('is-active');
+
+        currentIndex =
+          (index + images.length) % images.length;
+
+        images[currentIndex].classList.add('is-active');
+
+        if (caption) {
+          caption.textContent =
+            images[currentIndex].getAttribute('data-caption') || '';
+        }
+      }
+
+      window.setInterval(function () {
+        showHeroImage(currentIndex + 1);
+      }, 4500);
+
+    })();
+
+
+    // ==========================================================
+    // COVER ARTS CAROUSEL
+    // ==========================================================
+    (function () {
+
+      var carousel =
+        document.getElementById('coverCarousel');
+
+      if (!carousel) {
+        return;
+      }
+
+      var slides =
+        carousel.querySelectorAll('.cover-slide');
+
+      var dots =
+        carousel.querySelectorAll('#coverDots button');
+
+      var previousButton =
+        document.getElementById('coverPrev');
+
+      var nextButton =
+        document.getElementById('coverNext');
+
+      if (slides.length === 0) {
+        return;
+      }
+
+      var currentIndex = 0;
+      var autoPlayTimer = null;
+
+      var reduceMotion =
+        window.matchMedia &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+
+      // --------------------------------------------------------
+      // Display one cover
+      // --------------------------------------------------------
+      function showCover(index) {
+
+        currentIndex =
+          (index + slides.length) % slides.length;
+
+        slides.forEach(function (slide, i) {
+          slide.classList.toggle(
+            'is-active',
+            i === currentIndex
+          );
+        });
+
+        dots.forEach(function (dot, i) {
+          dot.classList.toggle(
+            'is-active',
+            i === currentIndex
+          );
+        });
+      }
+
+
+      // --------------------------------------------------------
+      // Next cover
+      // --------------------------------------------------------
+      function nextCover() {
+        showCover(currentIndex + 1);
+      }
+
+
+      // --------------------------------------------------------
+      // Previous cover
+      // --------------------------------------------------------
+      function previousCover() {
+        showCover(currentIndex - 1);
+      }
+
+
+      // --------------------------------------------------------
+      // Automatic rotation
+      // --------------------------------------------------------
+      function startAutoPlay() {
+
+        if (reduceMotion) {
+          return;
+        }
+
+        if (autoPlayTimer !== null) {
+          window.clearInterval(autoPlayTimer);
+        }
+
+        autoPlayTimer =
+          window.setInterval(function () {
+            nextCover();
+          }, 5000);
+      }
+
+
+      // --------------------------------------------------------
+      // Next button
+      // --------------------------------------------------------
+      if (nextButton) {
+        nextButton.addEventListener('click', function () {
+          nextCover();
+          startAutoPlay();
+        });
+      }
+
+
+      // --------------------------------------------------------
+      // Previous button
+      // --------------------------------------------------------
+      if (previousButton) {
+        previousButton.addEventListener('click', function () {
+          previousCover();
+          startAutoPlay();
+        });
+      }
+
+
+      // --------------------------------------------------------
+      // Navigation dots
+      // --------------------------------------------------------
+      dots.forEach(function (dot, index) {
+        dot.addEventListener('click', function () {
+          showCover(index);
+          startAutoPlay();
+        });
+      });
+
+
+      // --------------------------------------------------------
+      // Pause while mouse is over carousel
+      // --------------------------------------------------------
+      carousel.addEventListener('mouseenter', function () {
+        if (autoPlayTimer !== null) {
+          window.clearInterval(autoPlayTimer);
+          autoPlayTimer = null;
+        }
+      });
+
+      carousel.addEventListener('mouseleave', function () {
+        startAutoPlay();
+      });
+
+
+      // --------------------------------------------------------
+      // Start
+      // --------------------------------------------------------
+      showCover(0);
+      startAutoPlay();
+
+    })();
+
+
+    // ==========================================================
+    // PEOPLE FLIP CARDS
+    // ==========================================================
+    (function () {
+
+      var cards =
+        document.querySelectorAll('.member-card');
+
+      if (cards.length === 0) {
+        return;
+      }
+
+      cards.forEach(function (card) {
+
+        // Mouse / touch click
+        card.addEventListener('click', function (event) {
+
+          // Do not flip if a link inside the card was clicked
+          if (event.target.closest &&
+              event.target.closest('a')) {
+            return;
+          }
+
+          card.classList.toggle('is-flipped');
+
+        });
+
+
+        // Keyboard accessibility
+        card.setAttribute('tabindex', '0');
+        card.setAttribute('role', 'button');
+
+        card.addEventListener('keydown', function (event) {
+
+          if (event.key === 'Enter' || event.key === ' ') {
+
+            event.preventDefault();
+
+            card.classList.toggle('is-flipped');
+
+          }
+
+        });
+
+      });
+
+    })();
+
+  }
+</script>  .catch(function (error) {
     root.innerHTML =
       '<div class="wrap section-block">' +
       '<p style="color:var(--ink-soft);">' +
