@@ -23,18 +23,294 @@
     initPage();
   }).catch(function (err) {
     root.innerHTML =
-      '<div class="wrap section-block">' +
-      '<p style="color:var(--ink-soft);">' +
+      '<div class="wrap section-block"><p style="color:var(--ink-soft);">' +
       'Could not load the page content. If you just edited a file under sections/, ' +
-      'double-check the filename matches exactly, then refresh.' +
-      '</p>' +
-      '</div>';
+      'double-check the filename matches exactly, then refresh.</p></div>';
 
     console.error(err);
   });
 
 
+  // Force only the requested section to be visible.
   function forceCorrectVisibility() {
+    var target = location.hash.replace('#', '') || 'home';
+
+    if (SECTION_IDS.indexOf(target) === -1) {
+      target = 'home';
+    }
+
+    SECTION_IDS.forEach(function (id) {
+      var el = document.getElementById(id);
+
+      if (el) {
+        el.hidden = (id !== target);
+      }
+    });
+  }
+
+
+  function initPage() {
+
+    // ---------- Navigation ----------
+    function showSection(id) {
+
+      if (SECTION_IDS.indexOf(id) === -1) {
+        id = 'home';
+      }
+
+      SECTION_IDS.forEach(function (s) {
+        var el = document.getElementById(s);
+
+        if (el) {
+          el.hidden = (s !== id);
+        }
+      });
+
+      document.querySelectorAll('nav a').forEach(function (a) {
+        a.classList.toggle(
+          'active',
+          a.dataset.target === id
+        );
+      });
+    }
+
+
+    window.addEventListener('hashchange', function () {
+      showSection(location.hash.replace('#', ''));
+      window.scrollTo(0, 0);
+    });
+
+
+    showSection(location.hash.replace('#', '') || 'home');
+
+
+    // ---------- Dark mode ----------
+    var toggle = document.getElementById('themeToggle');
+
+    if (toggle) {
+      toggle.addEventListener('click', function () {
+
+        var current =
+          document.documentElement.getAttribute('data-theme');
+
+        document.documentElement.setAttribute(
+          'data-theme',
+          current === 'dark' ? 'light' : 'dark'
+        );
+
+      });
+    }
+
+
+    // ---------- Hero image carousel ----------
+    (function () {
+
+      var carousel =
+        document.getElementById('heroCarousel');
+
+      if (!carousel) {
+        return;
+      }
+
+      var imgs =
+        carousel.querySelectorAll('img');
+
+      var caption =
+        document.getElementById('heroCarouselCap');
+
+      if (imgs.length < 2) {
+        return;
+      }
+
+      var i = 0;
+
+      var reduceMotion =
+        window.matchMedia &&
+        window.matchMedia(
+          '(prefers-reduced-motion: reduce)'
+        ).matches;
+
+      if (reduceMotion) {
+        return;
+      }
+
+      setInterval(function () {
+
+        imgs[i].classList.remove('is-active');
+
+        i = (i + 1) % imgs.length;
+
+        imgs[i].classList.add('is-active');
+
+        if (caption) {
+          caption.textContent =
+            imgs[i].getAttribute('data-caption') || '';
+        }
+
+      }, 4500);
+
+    })();
+
+
+    // ---------- Cover Arts carousel ----------
+    (function () {
+
+      var carousel =
+        document.getElementById('coverCarousel');
+
+      if (!carousel) {
+        return;
+      }
+
+      var slides =
+        carousel.querySelectorAll('.cover-slide');
+
+      var dots =
+        carousel.querySelectorAll('#coverDots button');
+
+      var prev =
+        document.getElementById('coverPrev');
+
+      var next =
+        document.getElementById('coverNext');
+
+      if (slides.length === 0) {
+        return;
+      }
+
+      var current = 0;
+      var timer = null;
+
+      var reduceMotion =
+        window.matchMedia &&
+        window.matchMedia(
+          '(prefers-reduced-motion: reduce)'
+        ).matches;
+
+
+      function showCover(index) {
+
+        current =
+          (index + slides.length) % slides.length;
+
+        slides.forEach(function (slide, i) {
+          slide.classList.toggle(
+            'is-active',
+            i === current
+          );
+        });
+
+        dots.forEach(function (dot, i) {
+          dot.classList.toggle(
+            'is-active',
+            i === current
+          );
+        });
+      }
+
+
+      function nextCover() {
+        showCover(current + 1);
+      }
+
+
+      function previousCover() {
+        showCover(current - 1);
+      }
+
+
+      function startAutoPlay() {
+
+        if (reduceMotion) {
+          return;
+        }
+
+        clearInterval(timer);
+
+        timer = setInterval(function () {
+          nextCover();
+        }, 5000);
+      }
+
+
+      if (next) {
+        next.addEventListener('click', function () {
+          nextCover();
+          startAutoPlay();
+        });
+      }
+
+
+      if (prev) {
+        prev.addEventListener('click', function () {
+          previousCover();
+          startAutoPlay();
+        });
+      }
+
+
+      dots.forEach(function (dot, i) {
+        dot.addEventListener('click', function () {
+          showCover(i);
+          startAutoPlay();
+        });
+      });
+
+
+      showCover(0);
+      startAutoPlay();
+
+    })();
+
+
+    // ---------- People flip cards ----------
+    (function () {
+
+      var cards =
+        document.querySelectorAll('.member-card');
+
+      cards.forEach(function (card) {
+
+        card.addEventListener('click', function (event) {
+
+          // Do not flip when clicking a link
+          if (
+            event.target.closest &&
+            event.target.closest('a')
+          ) {
+            return;
+          }
+
+          card.classList.toggle('is-flipped');
+
+        });
+
+
+        // Keyboard accessibility
+        card.setAttribute('tabindex', '0');
+        card.setAttribute('role', 'button');
+
+        card.addEventListener('keydown', function (event) {
+
+          if (
+            event.key === 'Enter' ||
+            event.key === ' '
+          ) {
+
+            event.preventDefault();
+
+            card.classList.toggle('is-flipped');
+
+          }
+
+        });
+
+      });
+
+    })();
+
+  }
+</script>  function forceCorrectVisibility() {
     var target = location.hash.replace('#', '') || 'home';
 
     if (SECTION_IDS.indexOf(target) === -1) {
