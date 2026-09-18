@@ -1,235 +1,564 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Soft Matter &amp; Statistical Physics Group — IIT (BHU) Varanasi</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='80'%3E%F0%9F%94%AC%3C/text%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
-
-<header>
-  <div class="header-row wrap" style="padding-left:0;padding-right:0;">
-    <a class="wordmark" href="#home" data-target="home">Soft Matter &amp; Statistical Physics Group
-      <small>Department of Physics · IIT (BHU) Varanasi</small>
-    </a>
-    <nav aria-label="Primary">
-      <ul>
-        <li><a href="#home" data-target="home">Home</a></li>
-        <li><a href="#research" data-target="research">Research</a></li>
-        <li><a href="#publications" data-target="publications">Publications</a></li>
-        <li><a href="#people" data-target="people">People</a></li>
-        <li><a href="#gallery" data-target="gallery">Gallery</a></li>
-        <li><a href="#contact" data-target="contact">Contact</a></li>
-      </ul>
-    </nav>
-    <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">◐</button>
-  </div>
-</header>
-
-<main id="sectionsRoot">
-  <div class="wrap section-block" id="loadingNotice">
-    <p style="color:var(--ink-soft);">Loading…</p>
-  </div>
-</main>
-
-<footer class="wrap">
-  <div class="footer-row">
-    <div>Soft Matter &amp; Statistical Physics Group — IIT (BHU) Varanasi</div>
-    <ul class="footer-links">
-      <li><a href="mailto:awaneesh.phy@iitbhu.ac.in">Email</a></li>
-      <li><a href="#people">People</a></li>
-      <li><a href="#publications">Publications</a></li>
-    </ul>
-  </div>
-</footer>
-
 <script>
-  // Content for each navigation item lives in its own file under sections/.
-  // All sections are loaded first, then the correct section is shown
-  // according to the URL hash.
-  var SECTION_IDS = ['home', 'research', 'publications', 'people', 'gallery', 'contact'];
+  // ============================================================
+  // SECTION LOADING
+  // ============================================================
+  var SECTION_IDS = [
+    'home',
+    'research',
+    'publications',
+    'people',
+    'gallery',
+    'contact'
+  ];
+
   var root = document.getElementById('sectionsRoot');
 
   Promise.all(
     SECTION_IDS.map(function (id) {
-      return fetch('sections/' + id + '.html').then(function (r) {
-        if (!r.ok) throw new Error('Failed to load sections/' + id + '.html (' + r.status + ')');
-        return r.text();
+      return fetch('sections/' + id + '.html').then(function (response) {
+        if (!response.ok) {
+          throw new Error(
+            'Failed to load sections/' + id + '.html (' +
+            response.status +
+            ')'
+          );
+        }
+
+        return response.text();
       });
     })
-  ).then(function (htmlParts) {
+  )
+  .then(function (htmlParts) {
     root.innerHTML = htmlParts.join('\n');
+
     forceCorrectVisibility();
     initPage();
-  }).catch(function (err) {
+  })
+  .catch(function (error) {
     root.innerHTML =
-      '<div class="wrap section-block"><p style="color:var(--ink-soft);">' +
+      '<div class="wrap section-block">' +
+      '<p style="color:var(--ink-soft);">' +
       'Could not load the page content. If you just edited a file under sections/, ' +
-      'double-check the filename matches exactly, then refresh.</p></div>';
-    console.error(err);
+      'double-check the filename matches exactly, then refresh.' +
+      '</p>' +
+      '</div>';
+
+    console.error(error);
   });
 
-  // Force only the requested section to be visible.
+
+  // ============================================================
+  // PAGE VISIBILITY
+  // ============================================================
+  function getCurrentSection() {
+    var target = window.location.hash.substring(1);
+
+    if (SECTION_IDS.indexOf(target) === -1) {
+      target = 'home';
+    }
+
+    return target;
+  }
+
+
   function forceCorrectVisibility() {
-    var target = location.hash.replace('#', '') || 'home';
-    if (SECTION_IDS.indexOf(target) === -1) target = 'home';
+    var target = getCurrentSection();
 
     SECTION_IDS.forEach(function (id) {
-      var el = document.getElementById(id);
-      if (el) el.hidden = (id !== target);
+      var section = document.getElementById(id);
+
+      if (section) {
+        section.hidden = (id !== target);
+      }
     });
   }
 
+
+  // ============================================================
+  // PAGE INITIALIZATION
+  // ============================================================
   function initPage() {
 
+    // ----------------------------------------------------------
+    // Navigation
+    // ----------------------------------------------------------
     function showSection(id) {
-      if (SECTION_IDS.indexOf(id) === -1) id = 'home';
 
-      SECTION_IDS.forEach(function (s) {
-        var el = document.getElementById(s);
-        if (el) el.hidden = (s !== id);
+      if (SECTION_IDS.indexOf(id) === -1) {
+        id = 'home';
+      }
+
+      SECTION_IDS.forEach(function (sectionId) {
+        var section = document.getElementById(sectionId);
+
+        if (section) {
+          section.hidden = (sectionId !== id);
+        }
       });
 
-      document.querySelectorAll('nav a').forEach(function (a) {
-        a.classList.toggle('active', a.dataset.target === id);
+      var navLinks = document.querySelectorAll('nav a');
+
+      navLinks.forEach(function (link) {
+        var target = link.getAttribute('data-target');
+
+        if (target === id) {
+          link.classList.add('active');
+        } else {
+          link.classList.remove('active');
+        }
       });
     }
 
+
+    // Initial page
+    showSection(getCurrentSection());
+
+
+    // Change page when hash changes
     window.addEventListener('hashchange', function () {
-      showSection(location.hash.replace('#', ''));
-      window.scrollTo(0, 0);
+      showSection(getCurrentSection());
+
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: 'auto'
+      });
     });
 
-    showSection(location.hash.replace('#', '') || 'home');
 
-    // ---------- Dark mode ----------
-    var toggle = document.getElementById('themeToggle');
+    // ==========================================================
+    // DARK / LIGHT MODE
+    // ==========================================================
+    var themeToggle = document.getElementById('themeToggle');
 
-    if (toggle) {
-      toggle.addEventListener('click', function () {
-        var current = document.documentElement.getAttribute('data-theme');
-        document.documentElement.setAttribute(
-          'data-theme',
-          current === 'dark' ? 'light' : 'dark'
-        );
+    if (themeToggle) {
+
+      themeToggle.addEventListener('click', function () {
+
+        var currentTheme =
+          document.documentElement.getAttribute('data-theme');
+
+        if (currentTheme === 'dark') {
+          document.documentElement.setAttribute(
+            'data-theme',
+            'light'
+          );
+        } else {
+          document.documentElement.setAttribute(
+            'data-theme',
+            'dark'
+          );
+        }
+
       });
+
     }
 
-    // ---------- Hero image carousel ----------
-    (function () {
-      var carousel = document.getElementById('heroCarousel');
-      if (!carousel) return;
 
-      var imgs = carousel.querySelectorAll('img');
+    // ==========================================================
+    // HERO IMAGE CAROUSEL
+    // ==========================================================
+    (function () {
+
+      var carousel = document.getElementById('heroCarousel');
+
+      if (!carousel) {
+        return;
+      }
+
+      var images = carousel.querySelectorAll('img');
       var caption = document.getElementById('heroCarouselCap');
 
-      if (imgs.length < 2) return;
+      if (images.length < 2) {
+        return;
+      }
 
-      var i = 0;
-      var reduceMotion = window.matchMedia(
-        '(prefers-reduced-motion: reduce)'
-      ).matches;
+      var currentIndex = 0;
 
-      if (reduceMotion) return;
+      var reduceMotion = false;
 
-      setInterval(function () {
-        imgs[i].classList.remove('is-active');
-        i = (i + 1) % imgs.length;
-        imgs[i].classList.add('is-active');
+      if (window.matchMedia) {
+        reduceMotion =
+          window.matchMedia(
+            '(prefers-reduced-motion: reduce)'
+          ).matches;
+      }
+
+      if (reduceMotion) {
+        return;
+      }
+
+
+      function showHeroImage(index) {
+
+        images[currentIndex].classList.remove('is-active');
+
+        currentIndex =
+          (index + images.length) % images.length;
+
+        images[currentIndex].classList.add('is-active');
 
         if (caption) {
           caption.textContent =
-            imgs[i].getAttribute('data-caption') || '';
+            images[currentIndex].getAttribute(
+              'data-caption'
+            ) || '';
         }
+
+      }
+
+
+      window.setInterval(function () {
+        showHeroImage(currentIndex + 1);
       }, 4500);
+
     })();
 
-    // ---------- Cover Arts carousel ----------
+
+    // ==========================================================
+    // COVER ARTS CAROUSEL
+    // ==========================================================
     (function () {
-      var carousel = document.getElementById('coverCarousel');
-      if (!carousel) return;
 
-      var slides = carousel.querySelectorAll('.cover-slide');
-      var dots = carousel.querySelectorAll('#coverDots button');
-      var prev = document.getElementById('coverPrev');
-      var next = document.getElementById('coverNext');
+      var carousel =
+        document.getElementById('coverCarousel');
 
-      if (slides.length === 0) return;
+      if (!carousel) {
+        return;
+      }
 
-      var current = 0;
-      var timer = null;
-      var reduceMotion = window.matchMedia(
-        '(prefers-reduced-motion: reduce)'
-      ).matches;
+      var slides =
+        carousel.querySelectorAll('.cover-slide');
 
+      var dots =
+        carousel.querySelectorAll(
+          '#coverDots button'
+        );
+
+      var previousButton =
+        document.getElementById('coverPrev');
+
+      var nextButton =
+        document.getElementById('coverNext');
+
+
+      if (slides.length === 0) {
+        return;
+      }
+
+
+      var currentIndex = 0;
+      var autoPlayTimer = null;
+
+
+      var reduceMotion = false;
+
+      if (window.matchMedia) {
+        reduceMotion =
+          window.matchMedia(
+            '(prefers-reduced-motion: reduce)'
+          ).matches;
+      }
+
+
+      // --------------------------------------------------------
+      // Display one cover
+      // --------------------------------------------------------
       function showCover(index) {
-        current = (index + slides.length) % slides.length;
+
+        currentIndex =
+          (index + slides.length) % slides.length;
+
 
         slides.forEach(function (slide, i) {
-          slide.classList.toggle('is-active', i === current);
+
+          if (i === currentIndex) {
+            slide.classList.add('is-active');
+          } else {
+            slide.classList.remove('is-active');
+          }
+
         });
+
 
         dots.forEach(function (dot, i) {
-          dot.classList.toggle('is-active', i === current);
+
+          if (i === currentIndex) {
+            dot.classList.add('is-active');
+            dot.setAttribute('aria-current', 'true');
+          } else {
+            dot.classList.remove('is-active');
+            dot.removeAttribute('aria-current');
+          }
+
         });
+
       }
 
+
+      // --------------------------------------------------------
+      // Next cover
+      // --------------------------------------------------------
       function nextCover() {
-        showCover(current + 1);
+        showCover(currentIndex + 1);
       }
 
+
+      // --------------------------------------------------------
+      // Previous cover
+      // --------------------------------------------------------
       function previousCover() {
-        showCover(current - 1);
+        showCover(currentIndex - 1);
       }
 
+
+      // --------------------------------------------------------
+      // Automatic rotation
+      // --------------------------------------------------------
       function startAutoPlay() {
-        if (reduceMotion) return;
 
-        clearInterval(timer);
+        if (reduceMotion) {
+          return;
+        }
 
-        timer = setInterval(function () {
-          nextCover();
-        }, 5000);
+        if (autoPlayTimer !== null) {
+          window.clearInterval(autoPlayTimer);
+        }
+
+        autoPlayTimer =
+          window.setInterval(function () {
+            nextCover();
+          }, 5000);
+
       }
 
-      if (next) {
-        next.addEventListener('click', function () {
-          nextCover();
-          startAutoPlay();
-        });
+
+      // --------------------------------------------------------
+      // Stop automatic rotation
+      // --------------------------------------------------------
+      function stopAutoPlay() {
+
+        if (autoPlayTimer !== null) {
+          window.clearInterval(autoPlayTimer);
+          autoPlayTimer = null;
+        }
+
       }
 
-      if (prev) {
-        prev.addEventListener('click', function () {
-          previousCover();
-          startAutoPlay();
-        });
+
+      // --------------------------------------------------------
+      // Next button
+      // --------------------------------------------------------
+      if (nextButton) {
+
+        nextButton.addEventListener(
+          'click',
+          function () {
+
+            nextCover();
+            startAutoPlay();
+
+          }
+        );
+
       }
 
-      dots.forEach(function (dot, i) {
-        dot.addEventListener('click', function () {
-          showCover(i);
-          startAutoPlay();
-        });
+
+      // --------------------------------------------------------
+      // Previous button
+      // --------------------------------------------------------
+      if (previousButton) {
+
+        previousButton.addEventListener(
+          'click',
+          function () {
+
+            previousCover();
+            startAutoPlay();
+
+          }
+        );
+
+      }
+
+
+      // --------------------------------------------------------
+      // Navigation dots
+      // --------------------------------------------------------
+      dots.forEach(function (dot, index) {
+
+        dot.addEventListener(
+          'click',
+          function () {
+
+            showCover(index);
+            startAutoPlay();
+
+          }
+        );
+
       });
 
+
+      // --------------------------------------------------------
+      // Pause while mouse is over carousel
+      // This prevents the cover from changing while somebody
+      // is trying to read the description.
+      // --------------------------------------------------------
+      carousel.addEventListener(
+        'mouseenter',
+        function () {
+          stopAutoPlay();
+        }
+      );
+
+
+      carousel.addEventListener(
+        'mouseleave',
+        function () {
+          startAutoPlay();
+        }
+      );
+
+
+      // --------------------------------------------------------
+      // Pause while finger is touching carousel on mobile
+      // --------------------------------------------------------
+      carousel.addEventListener(
+        'touchstart',
+        function () {
+          stopAutoPlay();
+        },
+        { passive: true }
+      );
+
+
+      carousel.addEventListener(
+        'touchend',
+        function () {
+          startAutoPlay();
+        },
+        { passive: true }
+      );
+
+
+      // --------------------------------------------------------
+      // Keyboard accessibility for carousel
+      // --------------------------------------------------------
+      if (previousButton) {
+        previousButton.setAttribute(
+          'aria-label',
+          'Previous cover'
+        );
+      }
+
+      if (nextButton) {
+        nextButton.setAttribute(
+          'aria-label',
+          'Next cover'
+        );
+      }
+
+
+      // --------------------------------------------------------
+      // Start with first cover
+      // --------------------------------------------------------
       showCover(0);
       startAutoPlay();
+
     })();
 
-    // ---------- People flip cards ----------
-    document.querySelectorAll('.member-card').forEach(function (card) {
-      card.addEventListener('click', function () {
-        card.classList.toggle('is-flipped');
+
+    // ==========================================================
+    // PEOPLE FLIP CARDS
+    // ==========================================================
+    (function () {
+
+      var cards =
+        document.querySelectorAll('.member-card');
+
+
+      if (cards.length === 0) {
+        return;
+      }
+
+
+      cards.forEach(function (card) {
+
+        // Make cards keyboard accessible
+        card.setAttribute('tabindex', '0');
+        card.setAttribute('role', 'button');
+        card.setAttribute('aria-pressed', 'false');
+
+
+        // ------------------------------------------------------
+        // Mouse / touch click
+        // ------------------------------------------------------
+        card.addEventListener(
+          'click',
+          function (event) {
+
+            // Do not flip when clicking a link inside the card.
+            var element = event.target;
+
+            while (element && element !== card) {
+
+              if (
+                element.tagName &&
+                element.tagName.toLowerCase() === 'a'
+              ) {
+                return;
+              }
+
+              element = element.parentNode;
+            }
+
+
+            var isFlipped =
+              card.classList.toggle('is-flipped');
+
+
+            card.setAttribute(
+              'aria-pressed',
+              isFlipped ? 'true' : 'false'
+            );
+
+          }
+        );
+
+
+        // ------------------------------------------------------
+        // Keyboard: Enter / Space
+        // ------------------------------------------------------
+        card.addEventListener(
+          'keydown',
+          function (event) {
+
+            if (
+              event.key === 'Enter' ||
+              event.key === ' '
+            ) {
+
+              event.preventDefault();
+
+
+              var isFlipped =
+                card.classList.toggle('is-flipped');
+
+
+              card.setAttribute(
+                'aria-pressed',
+                isFlipped ? 'true' : 'false'
+              );
+
+            }
+
+          }
+        );
+
       });
-    });
+
+    })();
+
   }
 </script>
-
-</body>
-</html>
